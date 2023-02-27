@@ -1,3 +1,3 @@
 # SATScript
 
-Die Hauptarbeiten finden derzeit unter ''core/scriptparse'' statt.
+Die Hauptarbeiten finden derzeit in ''core/scriptparse'' statt.
