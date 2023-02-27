@@ -15,7 +15,7 @@ func (obj *PreparedUnparsedScriptCursor) Next() {
 	obj.CurrentHight++
 }
 
-// Gibt an ob sich der Cursor am ende Befindet
+// Gibt an ob sich der Cursor am ende befindet
 func (obj *PreparedUnparsedScriptCursor) IsEnd() bool {
 	return len(obj.PreparedUnparsedScriptObject.PreparatedTokens) == int(obj.CurrentHight)
 }
@@ -48,7 +48,7 @@ func (obj *SliceBodyCursor) Next() {
 	obj.CurrentHight++
 }
 
-// Gibt an ob sich der Cursor am ende Befindet
+// Gibt an ob sich der Cursor am ende befindet
 func (obj *SliceBodyCursor) IsEnd() bool {
 	return len(obj.Items) == int(obj.CurrentHight)
 }

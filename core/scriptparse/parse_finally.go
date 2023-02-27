@@ -2,7 +2,10 @@ package scriptparse
 
 import "fmt"
 
-// Diese Funktion wird verwendet um eine Funktion einlesen zu können
+/*
+Gibt an ob es sich um eine Funktionsdekleration handelt, wenn ja wird dise zurückgegebn,
+wenn nein wird ein nil wert zurückgegeben.
+*/
 func parseFunctionDeklaration(prep_script *PreparedUnparsedScript) (*ParsedFunction, error) {
 	// Es wird geprüft ob das Stack am ende ist
 	if prep_script.StackIsEnd() {
@@ -75,7 +78,10 @@ func parseFunctionDeklaration(prep_script *PreparedUnparsedScript) (*ParsedFunct
 	return func_obj, nil
 }
 
-// Gibt an ob es sich um ein Kommentar handelt
+/*
+Gibt an ob es sich um einen Kommentar handelt, wenn ja wird diser zurückgegebn,
+wenn nein wird ein nil wert zurückgegeben.
+*/
 func parseCommentDeclaration(prep_script *PreparedUnparsedScript) (*PreparedText, error) {
 	// Es wird geprüft ob das Stack am ende ist
 	if prep_script.StackIsEnd() {
@@ -103,7 +109,18 @@ func parseCommentDeclaration(prep_script *PreparedUnparsedScript) (*PreparedText
 	return extrcted_text_item, nil
 }
 
-// Diese Funktion wird verwendet um ein Vobereitestet Script zu Parsen
+/*
+Gibt an ob es sich um eine Variablen Dekleration handelt, wenn ja wird disee zurückgegebn,
+wenn nein wird ein nil wert zurückgegeben.
+*/
+func parseVariableDeclaration(prep_script *PreparedUnparsedScript) (*PreparedText, error) {
+	r := PreparedText("")
+	return &r, nil
+}
+
+/*
+Parst ein Vorberitetes Skript und bereitet es auf das Kompilieren vor
+*/
 func ParsePreparatedScript(prep_script *PreparedUnparsedScript) error {
 	// Die Höhe des Skriptes wird auf das Ende
 	prep_script.SetToSVHightEnd()

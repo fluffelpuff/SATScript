@@ -2,7 +2,9 @@ package scriptparse
 
 import "fmt"
 
-// Diese Funktion ließt ein Kommentar aus dem Curso ein
+/*
+Ließt ein Kommentar aus einem übergebenen Cursor ein
+*/
 func parseCommentByBodyCursor(cursor *SliceBodyCursor) (*ParsedScriptItem, error) {
 	// Es wird geprüft ob das Stack am ende ist
 	if cursor.IsEnd() {
@@ -35,53 +37,94 @@ func parseCommentByBodyCursor(cursor *SliceBodyCursor) (*ParsedScriptItem, error
 	return re_pars_item, nil
 }
 
-// Diese Funktion ließt einen Funktionsaufruf ein
+/*
+Ließt einen Funktionsaufruf ein
+*/
 func parseFunctionCall(cursor *SliceBodyCursor) (*ParsedScriptItem, error) {
 	return &ParsedScriptItem{}, nil
 }
 
-// Diese Funktion ließt einen Variable ein
+/*
+Ließt einen Variablenwert ein
+*/
 func parseVariableRead(cursor *SliceBodyCursor) (*ParsedScriptItem, error) {
 	return &ParsedScriptItem{}, nil
 }
 
-// Diese Funktion ließt eine Mathematische berechnung ein
+/*
+Ließt Mathematische berechnungen ein
+*/
 func parseMathOperation(cursor *SliceBodyCursor) (*ParsedScriptItem, error) {
 	return &ParsedScriptItem{}, nil
 }
 
-// Diese Funktion ließt einen Statischen Wert ein
+/*
+Ließt einen Statischenwert ein
+*/
 func parseStaticValue(cursor *SliceBodyCursor) (*ParsedScriptItem, error) {
 	return &ParsedScriptItem{}, nil
 }
 
-// Diese Funktion ließt eine IF Bedingung ein
+/*
+Ließt eine IF Bedingung ein
+*/
 func parseIfStatement(cursor *SliceBodyCursor) (*ParsedScriptItem, error) {
 	return &ParsedScriptItem{}, nil
 }
 
-// Diese Funktion ließt eine Switch Bedingung ein
+/*
+Ließt ein Switchcase ein
+*/
 func parseSwitchStatement(cursor *SliceBodyCursor) (*ParsedScriptItem, error) {
 	return &ParsedScriptItem{}, nil
 }
 
-// Diese Funktion ließt eine Variable Deklaration ein
+/*
+Ließt eine Variablen Dekleration ein
+*/
 func parseVarDeclaration(cursor *SliceBodyCursor) (*ParsedScriptItem, error) {
 	return &ParsedScriptItem{}, nil
 }
 
-// Diese Funktion ließt eine Variablen Neu Definition ein
+/*
+Ließt eine Variablen Veränderung ein
+*/
 func parseVarReDeclaration(cursor *SliceBodyCursor) (*ParsedScriptItem, error) {
 	return &ParsedScriptItem{}, nil
 }
 
-// Diese Funktion leißt Map Operationen ein
+/*
+Ließt Map Operationen ein
+*/
 func parseMapOperation(cursor *SliceBodyCursor) (*ParsedScriptItem, error) {
 	return &ParsedScriptItem{}, nil
 }
 
-// Diese Funktion ließt eine Event Aufruf ein
+/*
+Ließt einen Sicherheits Event basierten Funktionsaufruf ein
+*/
 func parseEmitCall(cursor *SliceBodyCursor) (*ParsedScriptItem, error) {
+	return &ParsedScriptItem{}, nil
+}
+
+/*
+Ließt eine Foorschleife ein
+*/
+func parseForLoop(cursor *SliceBodyCursor) (*ParsedScriptItem, error) {
+	return &ParsedScriptItem{}, nil
+}
+
+/*
+Ließt eone Whileschleife ein
+*/
+func parseWhileLoop(cursor *SliceBodyCursor) (*ParsedScriptItem, error) {
+	return &ParsedScriptItem{}, nil
+}
+
+/*
+Ließt einen Datentyp basierten Funktionsaufruf ein
+*/
+func parseDatatypeBasedFunctionCall(cursor *SliceBodyCursor) (*ParsedScriptItem, error) {
 	return &ParsedScriptItem{}, nil
 }
 
@@ -122,7 +165,10 @@ func parseReturnByBodyCursor(cursor *SliceBodyCursor, returns []*PreparedDatatyp
 	return nil, nil
 }
 
-// Diese Funktion ließt einen Funktionscube aus einem Cursoe ein
+/*
+Ließt einen Funktionscube aus einem übergebenen Cursor ein.
+# (var_name DataType, var_name_2 DataType) (bool, string, etc...) #
+*/
 func parseFunctionNameReturnDTypeCubeByCursor(cursor *PreparedUnparsedScriptCursor) (string, []*ParsedFunctionArgument, []*PreparedDatatype, error) {
 	// Es wird geprüft ob sich mindestens 1 Element auf dem Stack befindet
 	if cursor.IsEnd() {
@@ -319,7 +365,9 @@ func parseFunctionNameReturnDTypeCubeByCursor(cursor *PreparedUnparsedScriptCurs
 	return string(*function_name.TextValue), function_parms, extracted_data_types, nil
 }
 
-// Diese Funktion ließt einen Codeblock aus einem Cursor ein
+/*
+Ließt einen Codeblock ein, dieses kommt z.b innerhalb von Funktionen, IF-Bedingungen, Schleifen oder Switch Cases vor.
+*/
 func parseCodeBlockTypeCubeByCursor(cursor *PreparedUnparsedScriptCursor, returns []*PreparedDatatype) ([]*ParsedFunctionOperation, error) {
 	// Es wird geprüft ob sich mindestens 1 Element auf dem Stack befindet
 	if cursor.IsEnd() {
@@ -384,13 +432,33 @@ func parseCodeBlockTypeCubeByCursor(cursor *PreparedUnparsedScriptCursor, return
 			continue
 		}
 
+		// Es wird geprüft ob es sich um einen Funktionsaufruf handelt
+		pars_func_call, err := parseFunctionCall(body_cursor)
+		if err != nil {
+			return nil, fmt.Errorf("parseCodeBlockTypeCubeByCursor: " + err.Error())
+		}
+		if pars_func_call != nil {
+			fmt.Println("COMMENT_READ")
+			continue
+		}
+
+		// Es wird geprüft ob es sich um eine Variablen Dekleration handelt
+		is_var_dec, err := parseFunctionCall(body_cursor)
+		if err != nil {
+			return nil, fmt.Errorf("parseCodeBlockTypeCubeByCursor: " + err.Error())
+		}
+		if is_var_dec != nil {
+			fmt.Println("COMMENT_READ")
+			continue
+		}
+
 		// Es wird geprüft ob es sich um ein Return handelt
 		pars_returns, err := parseReturnByBodyCursor(body_cursor, returns)
 		if err != nil {
 			return nil, fmt.Errorf("parseCodeBlockTypeCubeByCursor: " + err.Error())
 		}
 		if pars_returns != nil {
-			continue
+			break
 		}
 
 		// Es wird ein Fehler ausgelöst, es handelt sich um ein unbekannten Eintrag auf dem Stack

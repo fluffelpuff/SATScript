@@ -5,7 +5,11 @@ import (
 	"strconv"
 )
 
-// Diese Funktion wandelt einen String in ein uin8 um
+/*
+Wandelt einen String in ein Uint8 Integer um.
+-> uint8 = Die Eingelesene Zahl
+-> error = Der Fehler welcher beim einlesen des Uint8 aufgetreten ist
+*/
 func convertStringToUint8(value string) (uint8, error) {
 	in, err := strconv.Atoi(value)
 	if in > 255 || in < 0 {
@@ -18,7 +22,11 @@ func convertStringToUint8(value string) (uint8, error) {
 	return uinted, nil
 }
 
-// Diese Funktion wandelt einen String in ein uin32 um
+/*
+Wandelt einen String in ein Uint32 Integer um.
+-> uint32 = Die Eingelesene Zahl
+-> error = Der Fehler welcher beim einlesen des Uint32 aufgetreten ist
+*/
 func covertToStringUint32(value string) (uint32, error) {
 	in, err := strconv.Atoi(value)
 	if in > 4294967295 || in < 0 {
@@ -31,7 +39,12 @@ func covertToStringUint32(value string) (uint32, error) {
 	return uinted, nil
 }
 
-// Gibt an das es sich um einen Datentypen handelt
+/*
+Gibt an ob es sich um einen zulässigen Datentypen handelt
+-> bool = True => Gültiger Datentyp, False => Ungültiger Datentyp
+-> *PreparedDatatype = Gibt den Datentypen zurück sofern einer gefunden wurde
+-> error = Gibt den Fehler an welcher beim ermitteln des Datentypes aufgetreten ist
+*/
 func isStringADatatype(strvalue string) (bool, *PreparedDatatype, error) {
 	for _, item := range DATATYPES_SLICE {
 		if string(*item) == strvalue {
@@ -41,7 +54,12 @@ func isStringADatatype(strvalue string) (bool, *PreparedDatatype, error) {
 	return false, new(PreparedDatatype), nil
 }
 
-// Gibt an ob es sich um ein Schlüsselwort handelt
+/*
+Gibt an ob es sich um ein zulässiges Schlüsselwort handelt
+-> bool = True => Gültiger Datentyp, False => Ungültiger Datentyp
+-> *PreparedKeyword = Gibt das Schlüsselwort zurück sofern eines gefunden wurde
+-> error = Gibt den Fehler an welcher beim ermitteln des Schlüsselwortes aufgetreten ist
+*/
 func isStringAKeyword(strvalue string) (bool, *PreparedKeyword, error) {
 	for _, item := range KEYWORD_SLICE {
 		if string(*item) == strvalue {

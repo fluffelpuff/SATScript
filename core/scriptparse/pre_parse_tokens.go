@@ -4,14 +4,29 @@ import "fmt"
 
 // Speichert alle Statischen Symbole zwischen
 type PreParsedToken struct {
-	Type        PreParsedTokenDataType
+	// Gibt den Aktuellen Typen an
+	Type PreParsedTokenDataType
+
+	// Gibt den Aktuellen Symbolwert an
 	SymbolValue SymbolToken
-	IsMinus     bool
-	StrLineEnd  uint64
-	Value       string
-	Line        uint64
-	StartPos    uint64
-	EndPos      uint64
+
+	// GIbt an ob es sich um eine Negative Zahl handelt
+	IsMinus bool
+
+	// Gibt an die Line an auf welcher ein String aufhört
+	StrLineEnd uint64
+
+	// Gibt den eigentlichen Wert an
+	Value string
+
+	// Gibt die Zeile an, auf welcher das Token beginnt
+	Line uint64
+
+	// Gibt die Position an, wekche angibt wo der Token beginnt
+	StartPos uint64
+
+	// Gibt die Position an, welche angibt wo der der Token endet
+	EndPos uint64
 }
 
 // Gibt an ob es sich um einen zulässigen String handelt
