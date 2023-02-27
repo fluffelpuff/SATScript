@@ -58,17 +58,35 @@ type PreparedComment struct {
 
 // Gibt ein Argument für eine Funktionsdeklaration an
 type ParsedFunctionArgument struct {
-	Type PreparedScriptTokenDataType
+	Type PreparedDatatype
 	Name string
+}
+
+// Stellt eine Operation dar
+type ParsedFunctionOperation struct {
 }
 
 // Wird verwendet wenn eine Funktionsdeklaration darzustellen
 type ParsedFunction struct {
-	Arguments []*ParsedFunctionArgument
-	Name      string
-	IsPublic  bool
+	Operations []*ParsedFunctionOperation
+	Arguments  []*ParsedFunctionArgument
+	ReturnType []*PreparedDatatype
+	Name       string
+	IsPublic   bool
+}
+
+// Gibt den verwendeten Item Type an
+type ParsedScriptItemType string
+
+// Speichert alle Skript einträge ab
+type ParsedScriptItem struct {
+	ItemType     *ParsedScriptItemType
+	CommentValue *PreparedText
 }
 
 // Gibt ein Geparstes Objekt an
-type ParsedObject struct {
+type ParsedScript struct {
+	DeclaratedFunctions []*string
+	DeclaratedVariabels []*string
+	Items               []*ParsedScriptItem
 }

@@ -108,6 +108,12 @@ var (
 	KEYWORD_EMIT     PreparedKeyword = PreparedKeyword("emit")
 )
 
+// Definiert den ParsedSkript Item eintrag an
+var (
+	PS_ITEM_FUNCTION_DECLARATION ParsedScriptItemType = ParsedScriptItemType("function_declaration")
+	PS_ITEM_COMMENT_DECLARATION  ParsedScriptItemType = ParsedScriptItemType("comment_declaration")
+)
+
 // Gibt alle bekannten Datentypen an
 var DATATYPES_SLICE = []*PreparedDatatype{
 	&DATATYPE_UNIVERSE_EP_ADDRESS, &DATATYPE_CONTRACT_ADDRESS, &DATATYPE_CHAIN_ADDRESS,

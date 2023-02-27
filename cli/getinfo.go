@@ -3,7 +3,7 @@ package main
 import (
 	"fmt"
 	"net/rpc"
-	"satvm/core/cliserver"
+	"satscript/core/cliserver"
 	"strconv"
 )
 

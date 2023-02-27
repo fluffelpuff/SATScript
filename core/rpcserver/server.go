@@ -1,8 +1,8 @@
 package rpcserver
 
 import (
-	"satvm/core/config"
-	"satvm/core/db"
+	"satscript/core/config"
+	"satscript/core/db"
 )
 
 type RPCServer struct {

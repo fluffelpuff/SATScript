@@ -3,7 +3,7 @@ package main
 import (
 	"fmt"
 	"net/rpc"
-	"satvm/core/scriptparse"
+	"satscript/core/scriptparse"
 )
 
 // Printed eine Liste mit allen Contracts

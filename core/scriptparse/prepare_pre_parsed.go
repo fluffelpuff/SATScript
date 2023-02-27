@@ -3,7 +3,7 @@ package scriptparse
 import (
 	"fmt"
 	"math/big"
-	"satvm/core/address"
+	"satscript/core/address"
 )
 
 // Stellt die Verwendete Version der Skriptsprache dar

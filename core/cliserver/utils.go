@@ -1,6 +1,6 @@
 package cliserver
 
-import "satvm/core/config"
+import "satscript/core/config"
 
 // Diese Funktion setzt die Rechte für eine Datei auf Root
 func setPrimToRoot(path string) error {

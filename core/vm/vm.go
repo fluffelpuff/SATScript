@@ -1,10 +1,10 @@
 package vm
 
 import (
-	"satvm/core/config"
-	"satvm/core/contract"
-	"satvm/core/db"
-	"satvm/core/log"
+	"satscript/core/config"
+	"satscript/core/contract"
+	"satscript/core/db"
+	"satscript/core/log"
 	"strconv"
 )
 

@@ -5,12 +5,12 @@ import (
 	"net/http"
 	"net/rpc"
 	"os"
-	"satvm/core/config"
-	"satvm/core/contract"
-	"satvm/core/db"
-	"satvm/core/info"
-	"satvm/core/log"
-	"satvm/core/vm"
+	"satscript/core/config"
+	"satscript/core/contract"
+	"satscript/core/db"
+	"satscript/core/info"
+	"satscript/core/log"
+	"satscript/core/vm"
 	"strconv"
 )
 

@@ -1,12 +1,12 @@
 package main
 
 import (
-	"satvm/core/cliserver"
-	"satvm/core/config"
-	"satvm/core/db"
-	"satvm/core/log"
-	"satvm/core/rpcserver"
-	"satvm/core/vm"
+	"satscript/core/cliserver"
+	"satscript/core/config"
+	"satscript/core/db"
+	"satscript/core/log"
+	"satscript/core/rpcserver"
+	"satscript/core/vm"
 	"time"
 )
 

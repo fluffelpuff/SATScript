@@ -1,4 +1,4 @@
-module satvm
+module satscript
 
 go 1.18
 

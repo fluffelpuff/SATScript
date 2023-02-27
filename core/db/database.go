@@ -3,10 +3,10 @@ package db
 import (
 	"database/sql"
 	"os"
-	"satvm/core/config"
-	"satvm/core/contract"
-	"satvm/core/log"
-	"satvm/core/peer"
+	"satscript/core/config"
+	"satscript/core/contract"
+	"satscript/core/log"
+	"satscript/core/peer"
 	"strconv"
 	"sync"
 
