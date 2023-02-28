@@ -75,6 +75,10 @@ type ParsedFunction struct {
 	IsPublic   bool
 }
 
+// Wird verwendet um eine Variable zu Deklarieren
+type ParsedVariableDeclaration struct {
+}
+
 // Gibt den verwendeten Item Type an
 type ParsedScriptItemType string
 
@@ -83,6 +87,7 @@ type ParsedScriptItem struct {
 	ItemType     *ParsedScriptItemType
 	CommentValue *PreparedText
 	FloatValue   *big.Float
+	VarName      string
 	IntValue     *big.Int
 	StringValue  string
 	BoolValue    bool
@@ -93,4 +98,13 @@ type ParsedScript struct {
 	DeclaratedFunctions []*string
 	DeclaratedVariabels []*string
 	Items               []*ParsedScriptItem
+}
+
+// Speichert die Variablen und die Funktionen ab welche verfügbar sind
+type ParsedScriptDefines struct {
+	// Speichert die Funktionen ab welche Deklariert wurden
+	DeclaratedFunctions []*ParsedFunction
+
+	// Speichert die Variablen ab welche Deklariert wurden
+	DeclaratedVariabels []*ParsedVariableDeclaration
 }

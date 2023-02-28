@@ -51,6 +51,9 @@ func parseFunctionDeklaration(prep_script *PreparedUnparsedScript) (*ParsedFunct
 		return nil, fmt.Errorf("parseFunctionDeklaration: invalid function declaration 3")
 	}
 
+	// Speichert die Variablen und Funktionen ab welche verfügbar sind
+	var_and_funcs := new(ParsedScriptDefines)
+
 	// Der Funktionscube wird eingelesen
 	func_name, arguments, rdtypes, err := parseFunctionNameReturnDTypeCubeByCursor(&cursor)
 	if err != nil {
@@ -58,7 +61,7 @@ func parseFunctionDeklaration(prep_script *PreparedUnparsedScript) (*ParsedFunct
 	}
 
 	// Die Bodydaten werden eingelesen
-	operations, err := parseCodeBlockTypeCubeByCursor(&cursor, rdtypes)
+	operations, err := parseCodeBlockTypeCubeByCursor(&cursor, rdtypes, var_and_funcs)
 	if err != nil {
 		return nil, fmt.Errorf("parseFunctionDeklaration: " + err.Error())
 	}

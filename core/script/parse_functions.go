@@ -48,7 +48,26 @@ func parseFunctionCall(cursor *SliceBodyCursor) (*ParsedScriptItem, error) {
 Ließt einen Variablenwert ein
 */
 func parseVariableRead(cursor *SliceBodyCursor) (*ParsedScriptItem, error) {
-	return &ParsedScriptItem{}, nil
+	// Es wird geprüft ob das Stack am ende ist
+	if cursor.IsEnd() {
+		return nil, nil
+	}
+
+	// Es wird geprüft ob sich ein Stringloser Text auf dem Stack befindet
+	if *cursor.GetCurrentItem().Type != PR_TEXT {
+		return nil, nil
+	}
+
+	// Das Rückgabe Objekt wird erstellt
+	return_values := new(ParsedScriptItem)
+	return_values.ItemType = &PS_ITEM_READ_VAR
+	return_values.VarName = string(*cursor.GetCurrentItem().TextValue)
+
+	// Das Stack wird um Eins erhöht
+	cursor.Next()
+
+	// Das Erzeugte Objekt wird zurückgegeben
+	return return_values, nil
 }
 
 /*
@@ -217,7 +236,7 @@ func parseCubeOperation(cursor *SliceBodyCursor) (*ParsedScriptItem, error) {
 /*
 Ließt Returnargumente ein
 */
-func parseReturnByBodyCursor(cursor *SliceBodyCursor, returns []*PreparedDatatype) (*ParsedScriptItem, error) {
+func parseReturnByBodyCursor(cursor *SliceBodyCursor, returns []*PreparedDatatype, defines *ParsedScriptDefines) ([]*ParsedScriptItem, error) {
 	// Es wird geprüft ob das Stack am ende ist
 	if cursor.IsEnd() {
 		return nil, nil
@@ -255,11 +274,60 @@ func parseReturnByBodyCursor(cursor *SliceBodyCursor, returns []*PreparedDatatyp
 		}
 		if is_static_value != nil {
 			// Es wird geprüft ob der Datentyp der passende ist
-			if is_static_value.ItemType != &PS_ITEM_STATIC_BOOL_VALUE {
-				return nil, fmt.Errorf("parseReturnByBodyCursor: invalid return data type, 1")
-			}
-			if *returns[len(inner_items)] != DATATYPE_BOOL {
-				return nil, fmt.Errorf("parseReturnByBodyCursor: invalid return data type, 2")
+			if is_static_value.ItemType == &PS_ITEM_STATIC_BOOL_VALUE {
+				if *returns[len(inner_items)] != DATATYPE_BOOL {
+					return nil, fmt.Errorf("parseReturnByBodyCursor: invalid return data type, 2")
+				}
+			} else if is_static_value.ItemType == &PS_ITEM_STATIC_FLOAT_VALUE {
+				if *returns[len(inner_items)] != DATATYPE_FLOAT {
+					return nil, fmt.Errorf("parseReturnByBodyCursor: invalid return data type, 3")
+				}
+			} else if is_static_value.ItemType == &PS_ITEM_STATIC_INTEGER_VALUE {
+				if *returns[len(inner_items)] != DATATYPE_INT {
+					return nil, fmt.Errorf("parseReturnByBodyCursor: invalid return data type, 4")
+				}
+			} else if is_static_value.ItemType == &PS_ITEM_STATIC_STRING_VALUE {
+				if *returns[len(inner_items)] != DATATYPE_STRING {
+					return nil, fmt.Errorf("parseReturnByBodyCursor: invalid return data type, 5")
+				}
+			} else if is_static_value.ItemType == &PS_ITEM_STATIC_ADDRESS {
+				if *returns[len(inner_items)] != DATATYPE_LN11_ADDRESS {
+					if *returns[len(inner_items)] != DATATYPE_CHAIN_ADDRESS {
+						if *returns[len(inner_items)] != DATATYPE_ACCOUNT_ADDRESS {
+							if *returns[len(inner_items)] != DATATYPE_CONTRACT_ADDRESS {
+								if *returns[len(inner_items)] != DATATYPE_UNIVERSE_EP_ADDRESS {
+									return nil, fmt.Errorf("parseReturnByBodyCursor: invalid return data type, 5")
+								}
+							}
+						}
+					}
+				}
+			} else if is_static_value.ItemType == &PS_ITEM_STATIC_BYTES {
+				if *returns[len(inner_items)] != DATATYPE_BYTES {
+					return nil, fmt.Errorf("parseReturnByBodyCursor: invalid return data type, 5")
+				}
+			} else if is_static_value.ItemType == &PS_ITEM_STATIC_LIST {
+				if *returns[len(inner_items)] != DATATYPE_LIST {
+					return nil, fmt.Errorf("parseReturnByBodyCursor: invalid return data type, 5")
+				}
+			} else if is_static_value.ItemType == &PS_ITEM_STATIC_JSON {
+				if *returns[len(inner_items)] != DATATYPE_JSON {
+					return nil, fmt.Errorf("parseReturnByBodyCursor: invalid return data type, 5")
+				}
+			} else if is_static_value.ItemType == &PS_ITEM_STATIC_ARRAY {
+				if *returns[len(inner_items)] != DATATYPE_ARRAY {
+					return nil, fmt.Errorf("parseReturnByBodyCursor: invalid return data type, 5")
+				}
+			} else if is_static_value.ItemType == &PS_ITEM_STATIC_AMOUNT {
+				if *returns[len(inner_items)] != DATATYPE_AMOUNT {
+					return nil, fmt.Errorf("parseReturnByBodyCursor: invalid return data type, 5")
+				}
+			} else if is_static_value.ItemType == &PS_ITEM_STATIC_URL {
+				if *returns[len(inner_items)] != DATATYPE_URL {
+					return nil, fmt.Errorf("parseReturnByBodyCursor: invalid return data type, 5")
+				}
+			} else {
+				return nil, fmt.Errorf("parseReturnByBodyCursor: invalid return data type, 6")
 			}
 
 			// Der Rückgabewerte wird zwiscnegspeichert
@@ -267,12 +335,38 @@ func parseReturnByBodyCursor(cursor *SliceBodyCursor, returns []*PreparedDatatyp
 
 			// Es wird geprüft ob noch ein eintrag erwartet wird
 			if len(inner_items) < len(returns) {
+				// Es wird geprüft ob dass Stack zu ende ist
+				if cursor.IsEnd() {
+					return nil, fmt.Errorf("parseReturnByBodyCursor: invalid return data type, 8")
+				}
+
 				// Es wird geprüft ob ein Komma auf dem Stack liegt
 				if *cursor.GetCurrentItem().Type != PR_SYMBOL {
-
+					return nil, fmt.Errorf("parseReturnByBodyCursor: invalid return data type, 3")
 				}
+				if *cursor.GetCurrentItem().SymbolValue != CommaSymbol {
+					return nil, fmt.Errorf("parseReturnByBodyCursor: invalid return data type, 4")
+				}
+
+				// Das Item wird aus dem Stack geholt
+				cursor.Next()
 			}
 
+			// Nächste Runde starten
+			continue
+		}
+
+		// Es wird geprüft ob eine Variable eingelesen werden soll
+		is_var_read, err := parseVariableRead(cursor)
+		if err != nil {
+			return nil, fmt.Errorf("parseReturnByBodyCursor: " + err.Error())
+		}
+		if is_var_read != nil {
+			// Es wird geprüft ob die Verwendete Variable vorhanden ist
+
+			// Es wird geprüft ob es sich um eine Funktion handelt
+
+			fmt.Println("VAR_READ")
 			continue
 		}
 
@@ -280,7 +374,13 @@ func parseReturnByBodyCursor(cursor *SliceBodyCursor, returns []*PreparedDatatyp
 		return nil, fmt.Errorf("parseReturnByBodyCursor: invalid stack, parsing return function is faileds")
 	}
 
-	return &ParsedScriptItem{}, nil
+	// Es wird geprüft ob alle Return Parameter gefunden wurden
+	if len(inner_items) != len(returns) {
+		return nil, fmt.Errorf("parseReturnByBodyCursor: invalid return data type, 9")
+	}
+
+	// Die Operationen werden zurückgegeben
+	return inner_items, nil
 }
 
 /*
@@ -436,14 +536,6 @@ func parseFunctionNameReturnDTypeCubeByCursor(cursor *PreparedUnparsedScriptCurs
 				// Der Datentyp wird extrahiert
 				extracted_data_types = append(extracted_data_types, c_item.DatatypeValue)
 
-				// Das Item wird von dem Stack extrahiert
-				cursor.Next()
-
-				// Es wird geprüft ob sich mindestens noch ein Eintrag auf dem Stack befindet
-				if cursor.IsEnd() {
-					return "", []*ParsedFunctionArgument{}, []*PreparedDatatype{}, fmt.Errorf("parseFunctionDeklaration: invalid function declaration 18")
-				}
-
 				// Es wird geprüft ob als nächstes ein Komma vorhanden ist
 				if *cursor.GetCurrentItem().Type == PR_SYMBOL {
 					if *cursor.GetCurrentItem().SymbolValue == CommaSymbol {
@@ -451,6 +543,7 @@ func parseFunctionNameReturnDTypeCubeByCursor(cursor *PreparedUnparsedScriptCurs
 					} else if *cursor.GetCurrentItem().SymbolValue != RightParenthesisSymbol {
 						return "", []*ParsedFunctionArgument{}, []*PreparedDatatype{}, fmt.Errorf("parseFunctionDeklaration: invalid function declaration 20")
 					}
+					continue
 				} else {
 					return "", []*ParsedFunctionArgument{}, []*PreparedDatatype{}, fmt.Errorf("parseFunctionDeklaration: invalid function declaration 21")
 				}
@@ -486,7 +579,7 @@ func parseFunctionNameReturnDTypeCubeByCursor(cursor *PreparedUnparsedScriptCurs
 /*
 Ließt einen Codeblock ein, dieses kommt z.b innerhalb von Funktionen, IF-Bedingungen, Schleifen oder Switch Cases vor.
 */
-func parseCodeBlockTypeCubeByCursor(cursor *PreparedUnparsedScriptCursor, returns []*PreparedDatatype) ([]*ParsedFunctionOperation, error) {
+func parseCodeBlockTypeCubeByCursor(cursor *PreparedUnparsedScriptCursor, returns []*PreparedDatatype, defines *ParsedScriptDefines) ([]*ParsedFunctionOperation, error) {
 	// Es wird geprüft ob sich mindestens 1 Element auf dem Stack befindet
 	if cursor.IsEnd() {
 		return nil, fmt.Errorf("parseCodeBlockTypeCubeByCursor: invalid function declaration 1")
@@ -560,12 +653,13 @@ func parseCodeBlockTypeCubeByCursor(cursor *PreparedUnparsedScriptCursor, return
 		}
 
 		// Es wird geprüft ob es sich um ein Return handelt
-		pars_returns, err := parseReturnByBodyCursor(body_cursor, returns)
+		pars_returns, err := parseReturnByBodyCursor(body_cursor, returns, defines)
 		if err != nil {
 			return nil, fmt.Errorf("parseCodeBlockTypeCubeByCursor: " + err.Error())
 		}
 		if pars_returns != nil {
-			break
+			fmt.Println("READED: RETURN_VALUE")
+			continue
 		}
 
 		// Es wird ein Fehler ausgelöst, es handelt sich um ein unbekannten Eintrag auf dem Stack

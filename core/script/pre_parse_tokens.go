@@ -224,7 +224,12 @@ func nextIsStringlessTexx(token []*Token) (PreParsedToken, []*Token, bool, error
 		return PreParsedToken{}, []*Token{}, false, nil
 	}
 	if token[0].Type != TEXT {
-		return PreParsedToken{}, []*Token{}, false, nil
+		if token[0].Type != SYMBOL {
+			return PreParsedToken{}, []*Token{}, false, nil
+		}
+		if token[0].Value != string(UnderscoreSymbol) {
+			return PreParsedToken{}, []*Token{}, false, nil
+		}
 	}
 
 	// Der Slice wird angepasst
@@ -237,6 +242,13 @@ func nextIsStringlessTexx(token []*Token) (PreParsedToken, []*Token, bool, error
 		last_lhight = hight
 		if item.Type == TEXT {
 			extracted_string += item.Value
+		} else if item.Type == SYMBOL {
+			if SymbolToken(item.Value) == UnderscoreSymbol {
+				extracted_string += item.Value
+			} else {
+				extracted.EndPos = item.Pos + 1
+				break
+			}
 		} else if item.Type == NUMBER {
 			if hight == 0 {
 				return PreParsedToken{}, []*Token{}, false, fmt.Errorf("nextIsStringlessTexx: Is invalid stringless text")
