@@ -366,6 +366,8 @@ func parseReturnByBodyCursor(cursor *SliceBodyCursor, returns []*PreparedDatatyp
 
 			// Es wird geprüft ob es sich um eine Funktion handelt
 
+			// Es handelt sich um eine unbekannte Variable
+
 			fmt.Println("VAR_READ")
 			continue
 		}
