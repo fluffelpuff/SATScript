@@ -3,7 +3,7 @@ package main
 import (
 	"fmt"
 	"net/rpc"
-	"satscript/core/scriptparse"
+	"satscript/core/script"
 )
 
 // Printed eine Liste mit allen Contracts
@@ -13,7 +13,7 @@ func compileScript(data []string, conn *rpc.Client) error {
 	fmt.Println(file_path)
 
 	// Es wird geprüft ob das Skript korrekt ist
-	is_correct, err := scriptparse.AnalyzeScriptFile(file_path)
+	is_correct, err := script.AnalyzeScriptFile(file_path)
 	if err != nil {
 		return err
 	}
