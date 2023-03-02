@@ -16,10 +16,10 @@ func parseFunctionDeklaration(prep_script *PreparedUnparsedScript) (*ParsedFunct
 	cursor := prep_script.GetCurrentCursor()
 
 	// Es wird grpüft ob ein Visible Keyword angegeben wurde
-	is_a_public_func := false
+	is_a_exporting_func := false
 	if *cursor.GetCurrentItem().Type == PR_KEYWORD {
-		if *cursor.GetCurrentItem().KeywordValue == KEYWORD_PUBLIC {
-			is_a_public_func = true
+		if *cursor.GetCurrentItem().KeywordValue == KEYWORD_EXPORT {
+			is_a_exporting_func = true
 			cursor.Next()
 
 			// Es wird geprüft ob der Cursor zu ende ist, wenn ja wird der Vorgang mit einem Fehler abgebrochen
@@ -33,7 +33,7 @@ func parseFunctionDeklaration(prep_script *PreparedUnparsedScript) (*ParsedFunct
 	// Es wird geprüft ob als nächstes ein Keyword mit dem Wert "func" vorhanden ist
 	if *cursor.GetCurrentItem().Type == PR_KEYWORD {
 		if *cursor.GetCurrentItem().KeywordValue != KEYWORD_FUNCTION {
-			if is_a_public_func {
+			if is_a_exporting_func {
 				return nil, fmt.Errorf("parseFunctionDeklaration: invalid script")
 			} else {
 				return nil, nil
@@ -74,7 +74,7 @@ func parseFunctionDeklaration(prep_script *PreparedUnparsedScript) (*ParsedFunct
 	func_obj.Arguments = arguments
 	func_obj.ReturnType = rdtypes
 	func_obj.Name = func_name
-	func_obj.IsPublic = is_a_public_func
+	func_obj.IsExporting = is_a_exporting_func
 	func_obj.Operations = operations
 
 	// Die Daten werden zurückgegeben

@@ -3,7 +3,7 @@ package script
 import "fmt"
 
 /*
-Ließt ein Kommentar aus einem übergebenen Cursor ein
+Liest ein Kommentar aus einem übergebenen Cursor ein
 */
 func parseCommentByBodyCursor(cursor *SliceBodyCursor) (*ParsedScriptItem, error) {
 	// Es wird geprüft ob das Stack am ende ist
@@ -38,203 +38,88 @@ func parseCommentByBodyCursor(cursor *SliceBodyCursor) (*ParsedScriptItem, error
 }
 
 /*
-Ließt einen Funktionsaufruf ein
+Liest einen Funktionsaufruf ein
 */
 func parseFunctionCall(cursor *SliceBodyCursor) (*ParsedScriptItem, error) {
-	return nil, nil
-}
-
-/*
-Ließt einen Variablenwert ein
-*/
-func parseVariableRead(cursor *SliceBodyCursor) (*ParsedScriptItem, error) {
-	// Es wird geprüft ob das Stack am ende ist
-	if cursor.IsEnd() {
-		return nil, nil
-	}
-
-	// Es wird geprüft ob sich ein Stringloser Text auf dem Stack befindet
-	if *cursor.GetCurrentItem().Type != PR_TEXT {
-		return nil, nil
-	}
-
-	// Das Rückgabe Objekt wird erstellt
-	return_values := new(ParsedScriptItem)
-	return_values.ItemType = &PS_ITEM_READ_VAR
-	return_values.VarName = string(*cursor.GetCurrentItem().TextValue)
-
-	// Das Stack wird um Eins erhöht
-	cursor.Next()
-
-	// Das Erzeugte Objekt wird zurückgegeben
-	return return_values, nil
-}
-
-/*
-Ließt Mathematische berechnungen ein
-*/
-func parseMathOperation(cursor *SliceBodyCursor) (*ParsedScriptItem, error) {
-	return &ParsedScriptItem{}, nil
-}
-
-/*
-Ließt einen Statischenwert ein
-*/
-func parseStaticValue(cursor *SliceBodyCursor) (*ParsedScriptItem, error) {
 	// Es wird geprüft ob das Stack am ende ist
 	if cursor.IsEnd() {
 		return nil, nil
 	}
 
 	// Es wird grpüft ob es sich um ein 'return' Keyword handelt
-	if *cursor.GetCurrentItem().Type == PR_KEYWORD {
-		if *cursor.GetCurrentItem().KeywordValue == KEYWORD_TRUE {
-			// Es wird um 1 erhöht auf dem Stack
-			cursor.Next()
-
-			// Die Aktuelle Höhe wird gesetzt
-			cursor.SetAbolut()
-
-			// Es wird ein neues Script Item erzeugt
-			return_value := new(ParsedScriptItem)
-			return_value.ItemType = &PS_ITEM_STATIC_BOOL_VALUE
-			return_value.BoolValue = true
-
-			// Die Daten werden zurückgegeben
-			return return_value, nil
-		} else if *cursor.GetCurrentItem().KeywordValue == KEYWORD_FALSE {
-			// Es wird um 1 erhöht auf dem Stack
-			cursor.Next()
-
-			// Die Aktuelle Höhe wird gesetzt
-			cursor.SetAbolut()
-
-			// Es wird ein neues Script Item erzeugt
-			return_value := new(ParsedScriptItem)
-			return_value.ItemType = &PS_ITEM_STATIC_BOOL_VALUE
-			return_value.BoolValue = false
-
-			// Die Daten werden zurückgegeben
-			return return_value, nil
-		} else {
-			return nil, nil
+	if *cursor.GetCurrentItem().Type != PR_TEXT {
+		if cursor.GetCurrentItem().Type == &PR_SYMBOL {
+			fmt.Println("NO_" + *cursor.GetCurrentItem().SymbolValue)
 		}
-	} else if *cursor.GetCurrentItem().Type == PR_TEXT_STR {
-		// Es wird ein neues Script Item erzeugt
-		return_value := new(ParsedScriptItem)
-		return_value.ItemType = &PS_ITEM_STATIC_STRING_VALUE
-		return_value.StringValue = string(*cursor.GetCurrentItem().StringValue)
-
-		// Es wird um 1 erhöht auf dem Stack
-		cursor.Next()
-
-		// Die Aktuelle Höhe wird gesetzt
-		cursor.SetAbolut()
-
-		return return_value, nil
-	} else if *cursor.GetCurrentItem().Type == PR_FLOAT {
-		// Es wird ein neues Script Item erzeugt
-		return_value := new(ParsedScriptItem)
-		return_value.ItemType = &PS_ITEM_STATIC_FLOAT_VALUE
-		return_value.FloatValue = *&cursor.GetCurrentItem().FloatValue.Value
-
-		// Es wird um 1 erhöht auf dem Stack
-		cursor.Next()
-
-		// Die Aktuelle Höhe wird gesetzt
-		cursor.SetAbolut()
-
-		return return_value, nil
-	} else if *cursor.GetCurrentItem().Type == PR_INTEGER {
-		// Es wird ein neues Script Item erzeugt
-		return_value := new(ParsedScriptItem)
-		return_value.ItemType = &PS_ITEM_STATIC_INTEGER_VALUE
-		return_value.IntValue = cursor.GetCurrentItem().IntegerValue.Value
-
-		// Es wird um 1 erhöht auf dem Stack
-		cursor.Next()
-
-		// Die Aktuelle Höhe wird gesetzt
-		cursor.SetAbolut()
-
-		return return_value, nil
-	} else {
 		return nil, nil
 	}
+
+	// Speichert den Aktuellen Namen der Aufgerufenenen Funktion ab
+	function_call_name := *cursor.GetCurrentItem().TextValue
+
+	// Das Stack wird um 1 erhöht
+	cursor.Next()
+
+	// Es wird geprüft ob es sich noch ein Element auf dem Stack befindet
+	if cursor.IsEnd() {
+		return nil, nil
+	}
+
+	// Es wird geprüft ob als nächstes ein FunctionCallCubevorhanden ist
+	func_cube_result, err := parseFuntionCallCube(cursor)
+	if err != nil {
+		return nil, err
+	}
+	if func_cube_result == nil {
+		fmt.Println("NO_CUBE")
+		cursor.Reset()
+		return nil, nil
+	}
+
+	// Es wird ein Funktionsaufruf erstetllt
+	func_call := new(ParsedScriptFunctionCall)
+	func_call.FunctionName = string(function_call_name)
+	func_call.Arguments = func_cube_result
+
+	// Ein neues Skript Item wird erzeugt
+	return_obj := new(ParsedScriptItem)
+	return_obj.ItemType = &PS_ITEM_CALL_FUNCTION
+	return_obj.FunctionCall = func_call
+
+	// Gibt die Daten zurück
+	return return_obj, nil
 }
 
 /*
-Ließt eine IF Bedingung ein
+Liest Mathematische berechnungen ein
 */
-func parseIfStatement(cursor *SliceBodyCursor) (*ParsedScriptItem, error) {
+func parseMathOperation(cursor *SliceBodyCursor) (*ParsedScriptItem, error) {
 	return &ParsedScriptItem{}, nil
 }
 
 /*
-Ließt ein Switchcase ein
-*/
-func parseSwitchStatement(cursor *SliceBodyCursor) (*ParsedScriptItem, error) {
-	return &ParsedScriptItem{}, nil
-}
-
-/*
-Ließt eine Variablen Dekleration ein
-*/
-func parseVarDeclaration(cursor *SliceBodyCursor) (*ParsedScriptItem, error) {
-	return &ParsedScriptItem{}, nil
-}
-
-/*
-Ließt eine Variablen Veränderung ein
-*/
-func parseVarReDeclaration(cursor *SliceBodyCursor) (*ParsedScriptItem, error) {
-	return &ParsedScriptItem{}, nil
-}
-
-/*
-Ließt Map Operationen ein
-*/
-func parseMapOperation(cursor *SliceBodyCursor) (*ParsedScriptItem, error) {
-	return &ParsedScriptItem{}, nil
-}
-
-/*
-Ließt einen Sicherheits Event basierten Funktionsaufruf ein
+Liest einen Sicherheits Event basierten Funktionsaufruf ein
 */
 func parseEmitCall(cursor *SliceBodyCursor) (*ParsedScriptItem, error) {
 	return &ParsedScriptItem{}, nil
 }
 
 /*
-Ließt eine Foorschleife ein
-*/
-func parseForLoop(cursor *SliceBodyCursor) (*ParsedScriptItem, error) {
-	return &ParsedScriptItem{}, nil
-}
-
-/*
-Ließt eone Whileschleife ein
-*/
-func parseWhileLoop(cursor *SliceBodyCursor) (*ParsedScriptItem, error) {
-	return &ParsedScriptItem{}, nil
-}
-
-/*
-Ließt einen Datentyp basierten Funktionsaufruf ein
+Liest einen Datentyp basierten Funktionsaufruf ein
 */
 func parseDatatypeBasedFunctionCall(cursor *SliceBodyCursor) (*ParsedScriptItem, error) {
 	return &ParsedScriptItem{}, nil
 }
 
 /*
-Ließt eine Cube Operation ein
+Liest eine Cube Operation ein
 */
 func parseCubeOperation(cursor *SliceBodyCursor) (*ParsedScriptItem, error) {
 	return &ParsedScriptItem{}, nil
 }
 
 /*
-Ließt Returnargumente ein
+Liest Returnargumente ein
 */
 func parseReturnByBodyCursor(cursor *SliceBodyCursor, returns []*PreparedDatatype, defines *ParsedScriptDefines) ([]*ParsedScriptItem, error) {
 	// Es wird geprüft ob das Stack am ende ist
@@ -356,24 +241,84 @@ func parseReturnByBodyCursor(cursor *SliceBodyCursor, returns []*PreparedDatatyp
 			continue
 		}
 
+		// Es wird geprüt ob ein Funktionsaufruf durchgeführt werden soll
+		is_function_call, err := parseFunctionCall(cursor)
+		if err != nil {
+			return nil, fmt.Errorf("parseReturnByBodyCursor: " + err.Error())
+		}
+		if is_function_call != nil {
+			// Es wird geprüft ob es sich um eine Funktion handelt
+			if !defines.IsADefinedFunction(is_function_call.FunctionCall.FunctionName) {
+				return nil, fmt.Errorf("parseReturnByBodyCursor: invalid script, unkown function call " + is_function_call.FunctionCall.FunctionName)
+			}
+
+			// Die Funktions Argumente werden Abgerufen
+			fnc_args := defines.GetFunctionParameter(is_function_call.FunctionCall.FunctionName)
+
+			// Es wird geprüft ob die Anazahl der benötigten
+			if len(fnc_args) != len(is_function_call.FunctionCall.Arguments) {
+				return nil, fmt.Errorf("parseReturnByBodyCursor: invalid stack, function call need args")
+			}
+
+			// Die Datentypen der Parameter werden geprüft
+			if len(fnc_args) > 0 {
+				for i := range fnc_args {
+
+				}
+			}
+
+			fmt.Println("Function Call")
+			break
+		}
+
 		// Es wird geprüft ob eine Variable eingelesen werden soll
 		is_var_read, err := parseVariableRead(cursor)
 		if err != nil {
 			return nil, fmt.Errorf("parseReturnByBodyCursor: " + err.Error())
 		}
 		if is_var_read != nil {
-			// Es wird geprüft ob die Verwendete Variable vorhanden ist
+			// Es wird geprüft ob es sich um eine gültige Variable handelt, sollte es sich nicht um eine Variable handeln so wird geprüft
+			// ob es sich um eine Aufrufbare Funktion handelt, wenn nicht wird der Vorgang mit einem Fehler abgebrochen.
+			if defines.IsAVariable(is_var_read.VarName) {
+				if *returns[len(inner_items)] != *defines.GetVariableDataType(is_var_read.VarName) {
+					return nil, fmt.Errorf("parseReturnByBodyCursor: invalid stack, parsing return function is failed, mismatch data type")
+				}
+			} else if defines.IsADefinedFunction(is_var_read.VarName) {
+				if *returns[len(inner_items)] != DATATYPE_CALLABLE {
+					return nil, fmt.Errorf("parseReturnByBodyCursor: invalid stack, parsing return function is failed, mismatch want callable")
+				}
+			} else {
+				return nil, fmt.Errorf("parseReturnByBodyCursor: invalid stack, parsing return function is failed, unkown return")
+			}
 
-			// Es wird geprüft ob es sich um eine Funktion handelt
+			// Der Rückgabewerte wird zwiscnegspeichert
+			inner_items = append(inner_items, is_var_read)
 
-			// Es handelt sich um eine unbekannte Variable
+			// Es wird geprüft ob noch ein eintrag erwartet wird
+			if len(inner_items) < len(returns) {
+				// Es wird geprüft ob dass Stack zu ende ist
+				if cursor.IsEnd() {
+					return nil, fmt.Errorf("parseReturnByBodyCursor: invalid return data type, 8")
+				}
 
-			fmt.Println("VAR_READ")
+				// Es wird geprüft ob ein Komma auf dem Stack liegt
+				if *cursor.GetCurrentItem().Type != PR_SYMBOL {
+					return nil, fmt.Errorf("parseReturnByBodyCursor: invalid return data type, 3")
+				}
+				if *cursor.GetCurrentItem().SymbolValue != CommaSymbol {
+					return nil, fmt.Errorf("parseReturnByBodyCursor: invalid return data type, 4")
+				}
+
+				// Das Item wird aus dem Stack geholt
+				cursor.Next()
+			}
+
+			// Nächste Runde starten
 			continue
 		}
 
 		// Es handet sich um einen unbekannten Stackeintrag
-		return nil, fmt.Errorf("parseReturnByBodyCursor: invalid stack, parsing return function is faileds")
+		return nil, fmt.Errorf("parseReturnByBodyCursor: invalid stack, parsing return function is failed")
 	}
 
 	// Es wird geprüft ob alle Return Parameter gefunden wurden
@@ -386,200 +331,7 @@ func parseReturnByBodyCursor(cursor *SliceBodyCursor, returns []*PreparedDatatyp
 }
 
 /*
-Ließt einen Funktionscube aus einem übergebenen Cursor ein.
-# (var_name DataType, var_name_2 DataType) (bool, string, etc...) #
-*/
-func parseFunctionNameReturnDTypeCubeByCursor(cursor *PreparedUnparsedScriptCursor) (string, []*ParsedFunctionArgument, []*PreparedDatatype, error) {
-	// Es wird geprüft ob sich mindestens 1 Element auf dem Stack befindet
-	if cursor.IsEnd() {
-		return "", []*ParsedFunctionArgument{}, []*PreparedDatatype{}, fmt.Errorf("parseFunctionNameReturnDTypeCubeByCursor: invalid function declaration 1")
-	}
-
-	// Es wird geprüft ob als nächstes ein Stringloser Textwert vorhanden ist
-	if *cursor.GetCurrentItem().Type != PR_TEXT {
-		return "", []*ParsedFunctionArgument{}, []*PreparedDatatype{}, fmt.Errorf("parseFunctionDeklaration: invalid function declaration 1")
-	}
-
-	// Es wird geprüft ob der Text auf der selben Zeile beginnt wo er aufhört
-	if cursor.GetCurrentItem().StrLineEnd != 0 {
-		return "", []*ParsedFunctionArgument{}, []*PreparedDatatype{}, fmt.Errorf("parseFunctionDeklaration: invalid function declaration 2")
-	}
-
-	// Der Textwert wird extrahiert
-	function_name := *cursor.GetCurrentItem()
-
-	// Das Stack wird um 1 Erhöht
-	cursor.Next()
-
-	// Es wird geprüft ob sich auf dem Stack noch ein Element befindet
-	if cursor.IsEnd() {
-		return "", []*ParsedFunctionArgument{}, []*PreparedDatatype{}, fmt.Errorf("parseFunctionDeklaration: invalid function declaration 4")
-	}
-
-	// Es wird gerpüft ob als nächstes ein OpenCube vorhanden ist
-	if *cursor.GetCurrentItem().Type != PR_SYMBOL {
-		return "", []*ParsedFunctionArgument{}, []*PreparedDatatype{}, fmt.Errorf("parseFunctionDeklaration: invalid function declaration 5")
-	}
-	if *cursor.GetCurrentItem().SymbolValue != LestParenthesisSymbol {
-		return "", []*ParsedFunctionArgument{}, []*PreparedDatatype{}, fmt.Errorf("parseFunctionDeklaration: invalid function declaration 6")
-	}
-
-	// Das Stack wird um eins erhöht
-	cursor.Next()
-
-	// Es wird geprüft ob der Cursor zu ende ist, wenn ja wird der Vorgang mit einem Fehler abgebrochen
-	if cursor.IsEnd() {
-		return "", []*ParsedFunctionArgument{}, []*PreparedDatatype{}, fmt.Errorf("parseFunctionDeklaration: invalid function declaration 7")
-	}
-
-	// Diese Schleife wird solange ausgeführt bis entwender das Stack leer ist, oder ein Cube Closer gefunden wurde
-	has_found_closer, function_parms := false, []*ParsedFunctionArgument{}
-	for !cursor.IsEnd() {
-		// Es wird geprüft ob es sich um einen Cube Close handelt
-		if *cursor.GetCurrentItem().Type == PR_SYMBOL {
-			if *cursor.GetCurrentItem().SymbolValue == RightParenthesisSymbol {
-				has_found_closer = true
-				cursor.Next()
-				break
-			} else if *cursor.GetCurrentItem().SymbolValue == CommaSymbol {
-				cursor.Next()
-			}
-		}
-
-		// Es wird geprüft ob es sich noch ein Element auf dem Stack befindet
-		if cursor.IsEnd() {
-			return "", []*ParsedFunctionArgument{}, []*PreparedDatatype{}, fmt.Errorf("parseFunctionDeklaration: 1")
-		}
-
-		// Es wird geprüft ob ein Text angegeben wurde
-		if *cursor.GetCurrentItem().Type != PR_TEXT {
-			return "", []*ParsedFunctionArgument{}, []*PreparedDatatype{}, fmt.Errorf("parseFunctionDeklaration: 2")
-		}
-
-		// Der Name der Variable wird extrahiert
-		variable_name := *cursor.GetCurrentItem().TextValue
-
-		// Es wird das nächste Item auf dem Stack asugewählt
-		cursor.Next()
-
-		// Es wird geprüft ob noch ein Eintrag vorhanden ist
-		if cursor.IsEnd() {
-			return "", []*ParsedFunctionArgument{}, []*PreparedDatatype{}, fmt.Errorf("parseFunctionDeklaration: 3")
-		}
-
-		// Es wird geprüft ob als nächstes ein Datentyp angegeben wurde
-		if *cursor.GetCurrentItem().Type != PR_DATATYPE {
-			fmt.Println(*cursor.GetCurrentItem().Type)
-			return "", []*ParsedFunctionArgument{}, []*PreparedDatatype{}, fmt.Errorf("parseFunctionDeklaration: 4")
-		}
-
-		// Der Datentyp wird extrahiert
-		variable_dtype := *cursor.GetCurrentItem().DatatypeValue
-
-		// Es wird das nächste Item auf dem Stack asugewählt
-		cursor.Next()
-
-		// Es wird geprüft ob noch ein Eintrag vorhanden ist
-		if cursor.IsEnd() {
-			return "", []*ParsedFunctionArgument{}, []*PreparedDatatype{}, fmt.Errorf("parseFunctionDeklaration: 3")
-		}
-
-		// Das Objekt wird erzeugt
-		arg_object := new(ParsedFunctionArgument)
-		arg_object.Name = string(variable_name)
-		arg_object.Type = variable_dtype
-
-		// Das Objekt wird zwischengespeichert
-		function_parms = append(function_parms, arg_object)
-	}
-
-	// Es wird geprüft ob der Cube geschlossen wurde
-	if !has_found_closer {
-		return "", []*ParsedFunctionArgument{}, []*PreparedDatatype{}, fmt.Errorf("parseFunctionDeklaration: invalid function declaration 8")
-	}
-
-	// Es wird geprüft ob sich mindestens 1 Element auf dem Stack befindet
-	if cursor.IsEnd() {
-		return "", []*ParsedFunctionArgument{}, []*PreparedDatatype{}, fmt.Errorf("parseFunctionDeklaration: invalid function declaration 9c")
-	}
-
-	// Es wird geprüft ob als nächstes mehrere Daten zurückgegeben werden sollen
-	extracted_data_types := []*PreparedDatatype{}
-	if *cursor.GetCurrentItem().Type == PR_SYMBOL {
-		// Es wird geprüft ob es sich um ein OpenCube handelt
-		if *cursor.GetCurrentItem().SymbolValue == LestParenthesisSymbol {
-			// Das Stack wird um 1 nach oben gezählt
-			cursor.Next()
-
-			// Es wird geprüft ob mindestns 1 Item auf dem Stack liegt
-			if cursor.IsEnd() {
-				return "", []*ParsedFunctionArgument{}, []*PreparedDatatype{}, fmt.Errorf("parseFunctionDeklaration: invalid function declaration 11")
-			}
-
-			// Die Schleife wird ausgeführt bis der Cube geschlossen wird
-			has_found_closer_two := false
-			for !cursor.IsEnd() {
-				// Das Aktuelle Element wird vom Stack geholt
-				c_item := cursor.GetCurrentItemANext()
-
-				// Es wird geprüft ob es sich um einen Cube Close handelt
-				if *c_item.Type == PR_SYMBOL {
-					if *c_item.SymbolValue == RightParenthesisSymbol {
-						has_found_closer_two = true
-						break
-					}
-				}
-
-				// Es wird geprüft ob es sich um einen Datentyp handelt
-				if *c_item.Type != PR_DATATYPE {
-					return "", []*ParsedFunctionArgument{}, []*PreparedDatatype{}, fmt.Errorf("parseFunctionDeklaration: invalid function declaration 17")
-				}
-
-				// Der Datentyp wird extrahiert
-				extracted_data_types = append(extracted_data_types, c_item.DatatypeValue)
-
-				// Es wird geprüft ob als nächstes ein Komma vorhanden ist
-				if *cursor.GetCurrentItem().Type == PR_SYMBOL {
-					if *cursor.GetCurrentItem().SymbolValue == CommaSymbol {
-						cursor.Next()
-					} else if *cursor.GetCurrentItem().SymbolValue != RightParenthesisSymbol {
-						return "", []*ParsedFunctionArgument{}, []*PreparedDatatype{}, fmt.Errorf("parseFunctionDeklaration: invalid function declaration 20")
-					}
-					continue
-				} else {
-					return "", []*ParsedFunctionArgument{}, []*PreparedDatatype{}, fmt.Errorf("parseFunctionDeklaration: invalid function declaration 21")
-				}
-			}
-
-			// Es wird geprüft ob der Cube geschlossen wurde
-			if !has_found_closer_two {
-				return "", []*ParsedFunctionArgument{}, []*PreparedDatatype{}, fmt.Errorf("parseFunctionDeklaration: invalid function declaration 12")
-			}
-
-			// Es wird geprüft ob sich mindesntens 1 Eintrag auf dem Stack befindet
-			if cursor.IsEnd() {
-				return "", []*ParsedFunctionArgument{}, []*PreparedDatatype{}, fmt.Errorf("parseFunctionDeklaration: invalid function declaration 13")
-			}
-		}
-	} else if *cursor.GetCurrentItem().Type == PR_DATATYPE {
-		// Der Datentyp wird hinzugefügt
-		extracted_data_types = append(extracted_data_types, cursor.GetCurrentItem().DatatypeValue)
-
-		// Das Stack wird um 1 Erhöht
-		cursor.Next()
-
-		// Es wird geprüft ob mindestnes 1 Element auf dem Stack liegt
-		if cursor.IsEnd() {
-			return "", []*ParsedFunctionArgument{}, []*PreparedDatatype{}, fmt.Errorf("parseFunctionDeklaration: invalid function declaration 14")
-		}
-	}
-
-	// Die Funktion wurd erfolgreich durchgeführt
-	return string(*function_name.TextValue), function_parms, extracted_data_types, nil
-}
-
-/*
-Ließt einen Codeblock ein, dieses kommt z.b innerhalb von Funktionen, IF-Bedingungen, Schleifen oder Switch Cases vor.
+Liest einen Codeblock ein, dieses kommt z.b innerhalb von Funktionen, IF-Bedingungen, Schleifen oder Switch Cases vor.
 */
 func parseCodeBlockTypeCubeByCursor(cursor *PreparedUnparsedScriptCursor, returns []*PreparedDatatype, defines *ParsedScriptDefines) ([]*ParsedFunctionOperation, error) {
 	// Es wird geprüft ob sich mindestens 1 Element auf dem Stack befindet

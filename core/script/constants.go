@@ -82,7 +82,7 @@ var (
 var (
 	KEYWORD_FUNCTION PreparedKeyword = PreparedKeyword("func")
 	KEYWORD_PAYABLE  PreparedKeyword = PreparedKeyword("payable")
-	KEYWORD_PUBLIC   PreparedKeyword = PreparedKeyword("public")
+	KEYWORD_EXPORT   PreparedKeyword = PreparedKeyword("export")
 	KEYWORD_PRIVATE  PreparedKeyword = PreparedKeyword("private")
 	KEYWORD_FALSE    PreparedKeyword = PreparedKeyword("false")
 	KEYWORD_ELSE     PreparedKeyword = PreparedKeyword("else")
@@ -125,6 +125,7 @@ var (
 	PS_ITEM_STATIC_URL           ParsedScriptItemType = ParsedScriptItemType("static_url_value")
 	PS_ITEM_CALLABLE             ParsedScriptItemType = ParsedScriptItemType("callable_value")
 	PS_ITEM_READ_VAR             ParsedScriptItemType = ParsedScriptItemType("read_var_value")
+	PS_ITEM_CALL_FUNCTION        ParsedScriptItemType = ParsedScriptItemType("call_function")
 )
 
 // Gibt alle bekannten Datentypen an
@@ -137,7 +138,7 @@ var DATATYPES_SLICE = []*PreparedDatatype{
 
 // Gibt alle bekannten Keywörter an
 var KEYWORD_SLICE = []*PreparedKeyword{
-	&KEYWORD_FUNCTION, &KEYWORD_PAYABLE, &KEYWORD_PUBLIC,
+	&KEYWORD_FUNCTION, &KEYWORD_PAYABLE, &KEYWORD_EXPORT,
 	&KEYWORD_FALSE, &KEYWORD_ELSE, &KEYWORD_NULL, &KEYWORD_BREAK,
 	&KEYWORD_TRUE, &KEYWORD_FINALLY, &KEYWORD_IS, &KEYWORD_RETURN, &KEYWORD_CONTINUE,
 	&KEYWORD_FOR, &KEYWORD_WHILE, &KEYWORD_ASSERT, &KEYWORD_ABORT, &KEYWORD_DELETE,

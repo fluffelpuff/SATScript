@@ -114,7 +114,7 @@ func (obj *PreparedUnparsedScript) GetCurrentCursor() PreparedUnparsedScriptCurs
 	return PreparedUnparsedScriptCursor{PreparedUnparsedScriptObject: obj, CurrentHight: obj.currentHight}
 }
 
-// Diese Funktion ließt die Verwendete Sprache und die Version des Skriptes ein
+// Diese Funktion Liest die Verwendete Sprache und die Version des Skriptes ein
 func getScriptLangAndVersion(token_list []*PreParsedToken) ([]*PreparedToken, *ScriptVersion, []*PreParsedToken, error) {
 	// Es werden alle Kommentare entfernt.
 	extracted_tokens, phight := []*PreparedToken{}, 0

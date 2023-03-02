@@ -68,11 +68,11 @@ type ParsedFunctionOperation struct {
 
 // Wird verwendet wenn eine Funktionsdeklaration darzustellen
 type ParsedFunction struct {
-	Operations []*ParsedFunctionOperation
-	Arguments  []*ParsedFunctionArgument
-	ReturnType []*PreparedDatatype
-	Name       string
-	IsPublic   bool
+	Operations  []*ParsedFunctionOperation
+	Arguments   []*ParsedFunctionArgument
+	ReturnType  []*PreparedDatatype
+	Name        string
+	IsExporting bool
 }
 
 // Wird verwendet um eine Variable zu Deklarieren
@@ -84,6 +84,7 @@ type ParsedScriptItemType string
 
 // Speichert alle Skript einträge ab
 type ParsedScriptItem struct {
+	FunctionCall *ParsedScriptFunctionCall
 	ItemType     *ParsedScriptItemType
 	CommentValue *PreparedText
 	FloatValue   *big.Float
@@ -107,4 +108,10 @@ type ParsedScriptDefines struct {
 
 	// Speichert die Variablen ab welche Deklariert wurden
 	DeclaratedVariabels []*ParsedVariableDeclaration
+}
+
+// Stellt einen Funktionsaufruf dar
+type ParsedScriptFunctionCall struct {
+	FunctionName string
+	Arguments    []*ParsedScriptItem
 }

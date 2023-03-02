@@ -2,12 +2,11 @@ package main
 
 import (
 	"fmt"
-	"net/rpc"
 	"satscript/core/script"
 )
 
 // Printed eine Liste mit allen Contracts
-func compileScript(data []string, conn *rpc.Client) error {
+func compileScript(data []string) error {
 	// Der Dateipfad wird ermittelt
 	file_path := data[0]
 	fmt.Println(file_path)
@@ -28,22 +27,10 @@ func compileScript(data []string, conn *rpc.Client) error {
 }
 
 // Wird ausgeführt wenn es sich um den Script befehl handelt
-func scriptCommand(data []string, conn *rpc.Client) error {
+func scriptCommand(data []string) error {
 	switch data[0] {
 	case "compile":
-		return compileScript(data[1:], conn)
-	case "check":
-		return listContracts(conn)
-	case "analyze":
-		return listContracts(conn)
-	case "test":
-		return listContracts(conn)
-	case "publish":
-		return listContracts(conn)
-	case "ipfpublish":
-		return listContracts(conn)
-	case "ordinalspublish":
-		return listContracts(conn)
+		return compileScript(data[1:])
 	default:
 		return fmt.Errorf("Unbekannter parameter " + data[0])
 	}

@@ -71,9 +71,10 @@ func isEmoji(obj string) bool {
 }
 
 /*
-Ließt einen Skriptstring in eine Liste einzelner Token (Zeichen) ein
+Liest einen Skriptstring in eine Liste einzelner Token (Zeichen) ein
 -> []*Token = Gibt die List der eingelesenen Token zurück
 -> error = Gibt einen Fehler an welcher beim einlesen aufgetreten ist:
+
 	-- Weniger als 6 Zeichen innerhalb des Skriptes
 	-- Unbekanntes / Nicht zulässiges Zeichen
 */
