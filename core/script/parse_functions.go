@@ -1,41 +1,8 @@
 package script
 
-import "fmt"
-
-/*
-Liest ein Kommentar aus einem übergebenen Cursor ein
-*/
-func parseCommentByBodyCursor(cursor *SliceBodyCursor) (*ParsedScriptItem, error) {
-	// Es wird geprüft ob das Stack am ende ist
-	if cursor.IsEnd() {
-		return nil, nil
-	}
-
-	// Es wird grpüft ob es sich um einen Kommentar handelt
-	if *cursor.GetCurrentItem().Type != PR_COMMENT {
-		return nil, nil
-	}
-
-	// Das Aktuelle Textitem wird extrahiert
-	extrcted_text_item := cursor.GetCurrentItem().TextValue
-
-	// Die Aktuelle Aboluthöhe wird gesetzt
-	cursor.SetAbolut()
-
-	// Der Stack wird um eins erhöht
-	cursor.Next()
-
-	// Es wird ein neues ParsedScriptItem erstellt
-	re_pars_item := new(ParsedScriptItem)
-	re_pars_item.ItemType = &PS_ITEM_COMMENT_DECLARATION
-	re_pars_item.CommentValue = extrcted_text_item
-
-	// Die neue Höhe wird Standardtisiert
-	cursor.SetAbolut()
-
-	// Es wird ein neues Kommentarobjekt erzeugt
-	return re_pars_item, nil
-}
+import (
+	"fmt"
+)
 
 /*
 Liest einen Funktionsaufruf ein
@@ -71,7 +38,6 @@ func parseFunctionCall(cursor *SliceBodyCursor) (*ParsedScriptItem, error) {
 		return nil, err
 	}
 	if func_cube_result == nil {
-		fmt.Println("NO_CUBE")
 		cursor.Reset()
 		return nil, nil
 	}
@@ -86,36 +52,46 @@ func parseFunctionCall(cursor *SliceBodyCursor) (*ParsedScriptItem, error) {
 	return_obj.ItemType = &PS_ITEM_CALL_FUNCTION
 	return_obj.FunctionCall = func_call
 
+	// Die Aktuelle Höhe des Stacks wird angepasst
+	cursor.SetAbolut()
+
 	// Gibt die Daten zurück
 	return return_obj, nil
 }
 
 /*
-Liest Mathematische berechnungen ein
-*/
-func parseMathOperation(cursor *SliceBodyCursor) (*ParsedScriptItem, error) {
-	return &ParsedScriptItem{}, nil
-}
-
-/*
-Liest einen Sicherheits Event basierten Funktionsaufruf ein
-*/
-func parseEmitCall(cursor *SliceBodyCursor) (*ParsedScriptItem, error) {
-	return &ParsedScriptItem{}, nil
-}
-
-/*
 Liest einen Datentyp basierten Funktionsaufruf ein
 */
-func parseDatatypeBasedFunctionCall(cursor *SliceBodyCursor) (*ParsedScriptItem, error) {
+func parseDatatypeBasedFunctionCall(cursor *SliceBodyCursor, defines *ParsedScriptDefines) (*ParsedScriptItem, error) {
+	// Es wird geprüft ob das Stack am ende ist
+	if cursor.IsEnd() {
+		return nil, nil
+	}
+
+	// Die Einzelnen Objekt und Datentyp einträge werden abgerufen
+	retrived_values := []string{}
+	for !cursor.IsEnd() {
+		// Es wird geprüft ob es sich um einen Text handelt
+		if *cursor.GetCurrentItem().Type == PR_TEXT {
+			retrived_values = append(retrived_values, string(*cursor.GetCurrentItem().TextValue))
+		} else {
+			if len(retrived_values) > 0 {
+
+			} else {
+
+			}
+		}
+	}
+
+	fmt.Println(retrived_values)
 	return &ParsedScriptItem{}, nil
 }
 
 /*
-Liest eine Cube Operation ein
+Überprüft ob die Typen für einen Funktionsaufruf mit den Datentypen der Funktion übereinstimmen
 */
-func parseCubeOperation(cursor *SliceBodyCursor) (*ParsedScriptItem, error) {
-	return &ParsedScriptItem{}, nil
+func matchFunctionArgDataTypeForCall(pfarg ParsedFunctionArgument, parsm ParsedScriptItem, defines *ParsedScriptDefines) (bool, error) {
+	return true, nil
 }
 
 /*
@@ -150,8 +126,23 @@ func parseReturnByBodyCursor(cursor *SliceBodyCursor, returns []*PreparedDatatyp
 	}
 
 	// Die Rückgabewerte werden eingelesen
-	inner_items := []*ParsedScriptItem{}
-	for !cursor.IsEnd() && len(inner_items) != len(returns) {
+	inner_items, next_is_comma_or_closer := []*ParsedScriptItem{}, false
+	for !cursor.IsEnd() && len(inner_items) < len(returns) {
+		// Es wird geprüft ob als nächstes ein Komma vorhanden ist
+		if next_is_comma_or_closer {
+			if *cursor.GetCurrentItem().Type != PR_SYMBOL {
+				return nil, fmt.Errorf("parseFuntionCallCube: invalid script a1")
+			}
+			if *cursor.GetCurrentItem().SymbolValue == CommaSymbol {
+				next_is_comma_or_closer = false
+				cursor.Next()
+				cursor.SetAbolut()
+				continue
+			} else {
+				return nil, fmt.Errorf("parseFuntionCallCube: invalid script a2")
+			}
+		}
+
 		// Es wird geprüft ob ein Statischerwert zurückgegeben werden soll
 		is_static_value, err := parseStaticValue(cursor)
 		if err != nil {
@@ -218,23 +209,11 @@ func parseReturnByBodyCursor(cursor *SliceBodyCursor, returns []*PreparedDatatyp
 			// Der Rückgabewerte wird zwiscnegspeichert
 			inner_items = append(inner_items, is_static_value)
 
-			// Es wird geprüft ob noch ein eintrag erwartet wird
+			// Signalisiert das als nächstes ein Komma oder ein Cube Closer vorhanden ist
 			if len(inner_items) < len(returns) {
-				// Es wird geprüft ob dass Stack zu ende ist
-				if cursor.IsEnd() {
-					return nil, fmt.Errorf("parseReturnByBodyCursor: invalid return data type, 8")
-				}
-
-				// Es wird geprüft ob ein Komma auf dem Stack liegt
-				if *cursor.GetCurrentItem().Type != PR_SYMBOL {
-					return nil, fmt.Errorf("parseReturnByBodyCursor: invalid return data type, 3")
-				}
-				if *cursor.GetCurrentItem().SymbolValue != CommaSymbol {
-					return nil, fmt.Errorf("parseReturnByBodyCursor: invalid return data type, 4")
-				}
-
-				// Das Item wird aus dem Stack geholt
-				cursor.Next()
+				next_is_comma_or_closer = true
+			} else {
+				break
 			}
 
 			// Nächste Runde starten
@@ -260,15 +239,60 @@ func parseReturnByBodyCursor(cursor *SliceBodyCursor, returns []*PreparedDatatyp
 				return nil, fmt.Errorf("parseReturnByBodyCursor: invalid stack, function call need args")
 			}
 
-			// Die Datentypen der Parameter werden geprüft
+			// Die Datentypen der Parameter werden auf übereinstimmung geprüft
 			if len(fnc_args) > 0 {
 				for i := range fnc_args {
-
+					is_ok, err := matchFunctionArgDataTypeForCall(*fnc_args[i], *is_function_call.FunctionCall.Arguments[i], defines)
+					if err != nil {
+						return nil, fmt.Errorf("parseReturnByBodyCursor: " + err.Error())
+					}
+					if !is_ok {
+						return nil, fmt.Errorf("parseReturnByBodyCursor: invalid function argument datatype")
+					}
 				}
 			}
 
-			fmt.Println("Function Call")
-			break
+			// Die Rückgabewerte der Funktion werden abgerufen
+			fnc_returns := defines.GetFunctionReturnTypes(is_function_call.FunctionCall.FunctionName)
+
+			// Es wird geprüft ob die Funktion mindestens einen Wert zurückgibt
+			if len(fnc_returns) < 1 {
+				return nil, fmt.Errorf("parseReturnByBodyCursor: called function has no return")
+			}
+
+			// Es wird geprüft ob die Anzahl der Rückgaben der Funktion die Anzahl der benötigten Rückgaben übersteigt
+			if len(inner_items)+len(fnc_returns) > len(returns) {
+				return nil, fmt.Errorf("parseReturnByBodyCursor: invalid stack, parsing return to many values for current function")
+			}
+
+			// Es wird geprüft ob die Rückgabe Typen der Funktion übereinstimmen
+			start_hight := len(inner_items)
+			for h := range fnc_returns {
+				if *fnc_returns[h] != *returns[start_hight] {
+					return nil, fmt.Errorf("parseReturnByBodyCursor: invalid stack, invalid function call return")
+				}
+
+				// Die Aktuelle höhe wird nach oben gesetzt
+				start_hight++
+
+				// Es wird geprüft ob die Aktuele Höhe das Maximum überschreitet
+				if start_hight > len(returns) {
+					return nil, fmt.Errorf("parseReturnByBodyCursor: invalid stack, parsing return function is failed")
+				}
+			}
+
+			// Das Item wird dem Stack hinzugefügt
+			inner_items = append(inner_items, is_function_call)
+
+			// Es wird Signalisiert dass als nächstes ein Komma oder ein Cube Closer vorhanden ist
+			if len(inner_items) < len(returns) {
+				next_is_comma_or_closer = true
+			} else {
+				break
+			}
+
+			// Die Nächste Runde
+			continue
 		}
 
 		// Es wird geprüft ob eine Variable eingelesen werden soll
@@ -279,7 +303,7 @@ func parseReturnByBodyCursor(cursor *SliceBodyCursor, returns []*PreparedDatatyp
 		if is_var_read != nil {
 			// Es wird geprüft ob es sich um eine gültige Variable handelt, sollte es sich nicht um eine Variable handeln so wird geprüft
 			// ob es sich um eine Aufrufbare Funktion handelt, wenn nicht wird der Vorgang mit einem Fehler abgebrochen.
-			if defines.IsAVariable(is_var_read.VarName) {
+			if defines.IsADefinedVariable(is_var_read.VarName) {
 				if *returns[len(inner_items)] != *defines.GetVariableDataType(is_var_read.VarName) {
 					return nil, fmt.Errorf("parseReturnByBodyCursor: invalid stack, parsing return function is failed, mismatch data type")
 				}
@@ -294,23 +318,11 @@ func parseReturnByBodyCursor(cursor *SliceBodyCursor, returns []*PreparedDatatyp
 			// Der Rückgabewerte wird zwiscnegspeichert
 			inner_items = append(inner_items, is_var_read)
 
-			// Es wird geprüft ob noch ein eintrag erwartet wird
+			// Signalisiert das als nächstes ein Komma oder ein Cube Closer vorhanden ist
 			if len(inner_items) < len(returns) {
-				// Es wird geprüft ob dass Stack zu ende ist
-				if cursor.IsEnd() {
-					return nil, fmt.Errorf("parseReturnByBodyCursor: invalid return data type, 8")
-				}
-
-				// Es wird geprüft ob ein Komma auf dem Stack liegt
-				if *cursor.GetCurrentItem().Type != PR_SYMBOL {
-					return nil, fmt.Errorf("parseReturnByBodyCursor: invalid return data type, 3")
-				}
-				if *cursor.GetCurrentItem().SymbolValue != CommaSymbol {
-					return nil, fmt.Errorf("parseReturnByBodyCursor: invalid return data type, 4")
-				}
-
-				// Das Item wird aus dem Stack geholt
-				cursor.Next()
+				next_is_comma_or_closer = true
+			} else {
+				break
 			}
 
 			// Nächste Runde starten
@@ -319,6 +331,11 @@ func parseReturnByBodyCursor(cursor *SliceBodyCursor, returns []*PreparedDatatyp
 
 		// Es handet sich um einen unbekannten Stackeintrag
 		return nil, fmt.Errorf("parseReturnByBodyCursor: invalid stack, parsing return function is failed")
+	}
+
+	// Es wird geprüft ob ein Komma erwartet wurde
+	if next_is_comma_or_closer {
+		return nil, fmt.Errorf("parseReturnByBodyCursor: invalid return data type, 11")
 	}
 
 	// Es wird geprüft ob alle Return Parameter gefunden wurden
@@ -403,6 +420,47 @@ func parseCodeBlockTypeCubeByCursor(cursor *PreparedUnparsedScriptCursor, return
 			return nil, fmt.Errorf("parseCodeBlockTypeCubeByCursor: " + err.Error())
 		}
 		if pars_func_call != nil {
+			fmt.Println("FUNC_CALL")
+			continue
+		}
+
+		// Wird geprüft ob es sich um einen Datentyp / Contract funktionsaufruf handelt
+		pars_func_type_call, err := parseDatatypeBasedFunctionCall(body_cursor, defines)
+		if err != nil {
+			return nil, fmt.Errorf("parseCodeBlockTypeCubeByCursor: " + err.Error())
+		}
+		if pars_func_type_call != nil {
+			fmt.Println("PARSE_DATATYPE_CALL")
+			continue
+		}
+
+		// Es wird geprüft ob es sich um einen Variablen Dekleration handelt
+		parse_var_dec, err := parseVarDeclaration(body_cursor, defines)
+		if err != nil {
+			return nil, fmt.Errorf("parseCodeBlockTypeCubeByCursor: " + err.Error())
+		}
+		if parse_var_dec != nil {
+			fmt.Println("SET_VAR")
+			continue
+		}
+
+		// Es wird geprüft ob es sich um eine Variablen veränderung handelt
+		parse_var_change, err := parseVarReDeclaration(body_cursor, defines)
+		if err != nil {
+			return nil, fmt.Errorf("parseCodeBlockTypeCubeByCursor: " + err.Error())
+		}
+		if parse_var_change != nil {
+			fmt.Println("CHANGE_VAR_VALUE")
+			continue
+		}
+
+		// Es wird geprüft ob es sich um eine Map dekleration handelt
+		parse_map_dec, err := parseMapDeclaration(body_cursor)
+		if err != nil {
+			return nil, fmt.Errorf("parseCodeBlockTypeCubeByCursor: " + err.Error())
+		}
+		if parse_map_dec != nil {
+			fmt.Println("MAP_DECLARATED")
 			continue
 		}
 

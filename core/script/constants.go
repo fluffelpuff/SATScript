@@ -76,6 +76,7 @@ var (
 	DATATYPE_AMOUNT              PreparedDatatype = PreparedDatatype("Amount")
 	DATATYPE_CALLABLE            PreparedDatatype = PreparedDatatype("Callable")
 	DATATYPE_URL                 PreparedDatatype = PreparedDatatype("URL")
+	DATATYPE_MAP                 PreparedDatatype = PreparedDatatype("Map")
 )
 
 // Definiert die Schlüsselwörter
@@ -106,6 +107,8 @@ var (
 	KEYWORD_NEW      PreparedKeyword = PreparedKeyword("new")
 	KEYWORD_DEFAULT  PreparedKeyword = PreparedKeyword("default")
 	KEYWORD_EMIT     PreparedKeyword = PreparedKeyword("emit")
+	KEYWORD_CLONE    PreparedKeyword = PreparedKeyword("clone")
+	KEYWORD_POINTR   PreparedKeyword = PreparedKeyword("pointr")
 )
 
 // Definiert den ParsedSkript Item eintrag an
@@ -126,6 +129,9 @@ var (
 	PS_ITEM_CALLABLE             ParsedScriptItemType = ParsedScriptItemType("callable_value")
 	PS_ITEM_READ_VAR             ParsedScriptItemType = ParsedScriptItemType("read_var_value")
 	PS_ITEM_CALL_FUNCTION        ParsedScriptItemType = ParsedScriptItemType("call_function")
+	PS_ITEM_VAR_DECLARATION      ParsedScriptItemType = ParsedScriptItemType("var_declaration")
+	PS_ITEM_VAR_CHANGE_VALUE     ParsedScriptItemType = ParsedScriptItemType("change_value")
+	PS_ITEM_MAP_DECLARATION      ParsedScriptItemType = ParsedScriptItemType("map_declaration")
 )
 
 // Gibt alle bekannten Datentypen an
@@ -133,7 +139,7 @@ var DATATYPES_SLICE = []*PreparedDatatype{
 	&DATATYPE_UNIVERSE_EP_ADDRESS, &DATATYPE_CONTRACT_ADDRESS, &DATATYPE_CHAIN_ADDRESS,
 	&DATATYPE_LN11_ADDRESS, &DATATYPE_ACCOUNT_ADDRESS, &DATATYPE_STRING, &DATATYPE_BOOL,
 	&DATATYPE_INT, &DATATYPE_FLOAT, &DATATYPE_BYTES, &DATATYPE_LIST, &DATATYPE_JSON,
-	&DATATYPE_ARRAY, &DATATYPE_AMOUNT, &DATATYPE_CALLABLE, &DATATYPE_URL,
+	&DATATYPE_ARRAY, &DATATYPE_AMOUNT, &DATATYPE_CALLABLE, &DATATYPE_URL, &DATATYPE_MAP,
 }
 
 // Gibt alle bekannten Keywörter an
@@ -143,5 +149,5 @@ var KEYWORD_SLICE = []*PreparedKeyword{
 	&KEYWORD_TRUE, &KEYWORD_FINALLY, &KEYWORD_IS, &KEYWORD_RETURN, &KEYWORD_CONTINUE,
 	&KEYWORD_FOR, &KEYWORD_WHILE, &KEYWORD_ASSERT, &KEYWORD_ABORT, &KEYWORD_DELETE,
 	&KEYWORD_ELSEIF, &KEYWORD_IF, &KEYWORD_IN, &KEYWORD_ENUM, &KEYWORD_SWITCH,
-	&KEYWORD_NEW, &KEYWORD_DEFAULT, &KEYWORD_EMIT,
+	&KEYWORD_NEW, &KEYWORD_DEFAULT, &KEYWORD_EMIT, &KEYWORD_CLONE, &KEYWORD_POINTR,
 }

@@ -6,8 +6,8 @@ func (obj *ParsedScriptDefines) IsADefinedFunction(fname string) bool {
 }
 
 // Gibt an ob es sich um eine bekannte Variable handelt
-func (obj *ParsedScriptDefines) IsAVariable(varName string) bool {
-	return false
+func (obj *ParsedScriptDefines) IsADefinedVariable(varName string) bool {
+	return true
 }
 
 // Gibt den Datentypen einer Variable zurück
@@ -16,8 +16,8 @@ func (obj *ParsedScriptDefines) GetVariableDataType(varName string) *PreparedDat
 }
 
 // Gibt die Returndatentypen einer Funktion an
-func (obj *ParsedScriptDefines) GetFunctionReturnType(fName string) {
-
+func (obj *ParsedScriptDefines) GetFunctionReturnTypes(fName string) []*PreparedDatatype {
+	return []*PreparedDatatype{&DATATYPE_INT}
 }
 
 // Gibt die Parameter einer Funktion zurück

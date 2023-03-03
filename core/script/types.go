@@ -58,7 +58,7 @@ type PreparedComment struct {
 
 // Gibt ein Argument für eine Funktionsdeklaration an
 type ParsedFunctionArgument struct {
-	Type PreparedDatatype
+	Type *PreparedDatatype
 	Name string
 }
 
@@ -76,7 +76,9 @@ type ParsedFunction struct {
 }
 
 // Wird verwendet um eine Variable zu Deklarieren
-type ParsedVariableDeclaration struct {
+type ParsedScriptVariableDeclaration struct {
+	Pointr *ParsedScriptVariableDeclaration
+	Name   string
 }
 
 // Gibt den verwendeten Item Type an
@@ -84,14 +86,16 @@ type ParsedScriptItemType string
 
 // Speichert alle Skript einträge ab
 type ParsedScriptItem struct {
-	FunctionCall *ParsedScriptFunctionCall
-	ItemType     *ParsedScriptItemType
-	CommentValue *PreparedText
-	FloatValue   *big.Float
-	VarName      string
-	IntValue     *big.Int
-	StringValue  string
-	BoolValue    bool
+	FunctionCall        *ParsedScriptFunctionCall
+	MapDeclaration      *ParsedScriptMapDeclaration
+	ItemType            *ParsedScriptItemType
+	VarDeclarationValue *ParsedScriptItem
+	CommentValue        *PreparedText
+	FloatValue          *big.Float
+	VarName             string
+	IntValue            *big.Int
+	StringValue         string
+	BoolValue           bool
 }
 
 // Gibt ein Geparstes Objekt an
@@ -107,11 +111,17 @@ type ParsedScriptDefines struct {
 	DeclaratedFunctions []*ParsedFunction
 
 	// Speichert die Variablen ab welche Deklariert wurden
-	DeclaratedVariabels []*ParsedVariableDeclaration
+	DeclaratedVariabels []*ParsedScriptVariableDeclaration
 }
 
 // Stellt einen Funktionsaufruf dar
 type ParsedScriptFunctionCall struct {
 	FunctionName string
 	Arguments    []*ParsedScriptItem
+}
+
+// Stellt eine Map Dekleration dar
+type ParsedScriptMapDeclaration struct {
+	R_Type *PreparedDatatype
+	L_Type *PreparedDatatype
 }

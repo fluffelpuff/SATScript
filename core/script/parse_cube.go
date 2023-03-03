@@ -34,7 +34,7 @@ func parseFuntionCallCube(cursor *SliceBodyCursor) ([]*ParsedScriptItem, error) 
 	// Die Schleife wird ausgeführt bis Entweder das Stack leer ist
 	// oder eine Cube Closer gefunden wurde
 	has_cube_closer_found, next_is_end_or_comma, extracted := false, false, []*ParsedScriptItem{}
-	for !cursor.IsEnd() && has_cube_closer_found == false {
+	for !cursor.IsEnd() && !has_cube_closer_found {
 		// Es wird geprüft ob als nächstes ein Comma oder
 		if next_is_end_or_comma {
 			if *cursor.GetCurrentItem().Type != PR_SYMBOL {
@@ -62,8 +62,6 @@ func parseFuntionCallCube(cursor *SliceBodyCursor) ([]*ParsedScriptItem, error) 
 					cursor.SetAbolut()
 					break
 				}
-			} else {
-				return nil, fmt.Errorf("parseFuntionCallCube: invalid script a5")
 			}
 		}
 
@@ -211,7 +209,7 @@ func parseFunctionNameReturnDTypeCubeByCursor(cursor *PreparedUnparsedScriptCurs
 		// Das Objekt wird erzeugt
 		arg_object := new(ParsedFunctionArgument)
 		arg_object.Name = string(variable_name)
-		arg_object.Type = variable_dtype
+		arg_object.Type = &variable_dtype
 
 		// Das Objekt wird zwischengespeichert
 		function_parms = append(function_parms, arg_object)

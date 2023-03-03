@@ -169,7 +169,7 @@ func ParsePreparatedScript(prep_script *PreparedUnparsedScript) error {
 		}
 
 		// Es wird ein Fehler ausgelöst, da es sich um einen unbekannten vorgang handelt
-		return fmt.Errorf("Invalid script, parsing aborted")
+		return fmt.Errorf("ParsePreparatedScript: Invalid script, parsing aborted")
 	}
 
 	return nil
