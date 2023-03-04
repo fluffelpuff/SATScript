@@ -69,11 +69,31 @@ func parseDatatypeBasedFunctionCall(cursor *SliceBodyCursor, defines *ParsedScri
 	}
 
 	// Die Einzelnen Objekt und Datentyp einträge werden abgerufen
-	retrived_values := []string{}
+	retrived_values, las_was_comma, next_is_comma, hight := []string{}, false, false, 0
 	for !cursor.IsEnd() {
+		// Es wird geprüft ob es sich um ein Punkt handelt
+		if next_is_comma {
+
+		}
+
 		// Es wird geprüft ob es sich um einen Text handelt
 		if *cursor.GetCurrentItem().Type == PR_TEXT {
+			// Es wird geprüft ob als letztes ein Punkt angegeben wurde
+			if !las_was_comma {
+				// Es wird geprüft ob es sich um das erste Item handelt
+				if hight != 0 {
+
+				}
+			}
+
+			// Die Daten werden der Extrahierten Liste hinzugefügt
 			retrived_values = append(retrived_values, string(*cursor.GetCurrentItem().TextValue))
+
+			// Es wird Signalisiert dass als letztes kein Punkt auf dem Stack lag
+			las_was_comma = false
+
+			// Es wird Signalisiert
+			next_is_comma = true
 		} else {
 			if len(retrived_values) > 0 {
 
@@ -460,7 +480,7 @@ func parseCodeBlockTypeCubeByCursor(cursor *PreparedUnparsedScriptCursor, return
 			return nil, fmt.Errorf("parseCodeBlockTypeCubeByCursor: " + err.Error())
 		}
 		if parse_map_dec != nil {
-			fmt.Println("MAP_DECLARATED")
+			fmt.Println("MAP_DECLARED")
 			continue
 		}
 
@@ -470,7 +490,7 @@ func parseCodeBlockTypeCubeByCursor(cursor *PreparedUnparsedScriptCursor, return
 			return nil, fmt.Errorf("parseCodeBlockTypeCubeByCursor: " + err.Error())
 		}
 		if pars_returns != nil {
-			fmt.Println("READED: RETURN_VALUE")
+			fmt.Println("RETURN_VALUE")
 			continue
 		}
 

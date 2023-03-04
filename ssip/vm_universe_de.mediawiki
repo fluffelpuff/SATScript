@@ -1,0 +1,16 @@
+<pre>
+  Title: SATScript Universe / Contract VM
+  Author: 
+    Fluffel₿uff
+      Twitter: https://twitter.com/fluffelpuffcode
+      Nostr: npub14hewvxry7lp6wzec0rzcc6py9qr46seeagkx0c7mkmr3rckex3dq88hzee
+  Comments-Summary: Noch in bearbeitung
+  Status: Entwurf
+</pre>
+
+=== Abstrakt ===
+
+Dieses Dokument beschreibt, welche Funktionen die Universen und virtuellen Maschinen in SATScript haben,</br>
+es beschreibt, wie Daten geschrieben und gelesen werden und wie eine Absicherung der Daten über mehrere Nodes hinweg erreicht wird.
+
+=== Motivation ===
