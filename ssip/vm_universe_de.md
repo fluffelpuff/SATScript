@@ -1,0 +1,30 @@
+<pre>
+  Title: SATScript Universe / Contract VM (PreWhitePaper)
+  Author: 
+    Fluffel₿uff
+      Twitter: https://twitter.com/fluffelpuffcode
+      Nostr: npub14hewvxry7lp6wzec0rzcc6py9qr46seeagkx0c7mkmr3rckex3dq88hzee
+  Comments-Summary: Noch in bearbeitung
+  Status: Entwurf
+</pre>
+
+=== Abstrakt ===
+
+Dieses Dokument beschreibt, welche Funktionen die Universen und virtuellen Maschinen in SATScript haben,
+es beschreibt, wie Daten geschrieben und gelesen werden und wie eine Absicherung der Daten über mehrere Nodes hinweg erreicht wird.
+
+=== Motivation ===
+
+Es ist ein Versuch zu beweisen, dass Smart Contracts auch auf Bitcoin umsetzbar sind und dass mit einer hoher Funktionalität.
+Smart Contracts, die im Hauptlayer ausgeführt/ausgewertet werden, haben aus meiner Sicht nachfolgende Nachteile:
++ Durch massenhafte On-Chain Ausführung/Auswertung von Smart Contracts wird der Mempool belastet. Dies führt wiederum zu höheren Gebühren und längeren Wartezeiten bei Transaktionen.
++ Die Zensurresistenz einer Blockchain wird verringert, insbesondere die des Vertrags. Die Adresse eines Vertrags kann unter bestimmten Umständen auf eine schwarze Liste gesetzt werden. Dies hätte zur Folge, dass eine Interaktion mit diesem Vertrag nur schwer oder gar nicht mehr möglich wäre.
++ Alle Vertragsinteraktionen sind für immer in der Blockchain gespeichert. Das schwächt die Anonymität einzelner Vertragsparteien. Auch wenn die Transparenz einer Blockchain im Hauptlayer unumgänglich für ihre Sicherheit ist, kann es für einzelne Nutzer Probleme geben, wenn jeder ihre Vertragsinteraktionen nachvollziehen kann.
++ Es müssen X-mal mehr Daten auf der Blockchain gespeichert werden, was zu einer Zentralisierung führen kann. Auch wenn das Speichern immer günstiger wird, sind Terabytes auf Handys und Co. noch kein Standard. Selbst dann stellt sich die Frage: "Muss alles für immer On-Chain gespeichert werden?"
++ Nachdem ein Vertrag auf der Blockchain initialisiert wurde, kann dieser nicht mehr verändert werden. Auf der einen Seite ist das eine Kerneigenschaft einer Blockchain und unumgänglich für den Betrieb einer Blockchain. Der Code des Vertrags ist für immer in der Blockchain gespeichert. Auch dann, wenn der Vertrag von niemandem mehr verwendet wird, bleibt er für immer online. Bei Ethereum erhält ein Vertrag oft einen Eigentümer, der in der Lage ist, den "dezentralen" Smart Contract zu stoppen. Dies hat bei einem fehlerhaften Vertrag zwar den Vorteil, dass neue Nutzer geschützt werden können, da eine Interaktion mit dem Vertrag nicht mehr möglich ist. Es stellt jedoch die Dezentralität des Smart Contracts in Frage, wenn zentrale Stellen in der Lage sind, einen "dezentralen" Vertrag aufzuhalten. Deshalb stellt sich die Frage: "Ist es unbedingt notwendig, einen Smart Contract auf einer Blockchain zu speichern?"
+
+
+Die Ausführung eines Smart Contracts ist mit der Ausführung eines normalen Programmes oder einer App vergleichbar nur mit dem Unterschied, dass jede Operation durch Kryptographische (und andere) Funktionen so zusammengefasst wird, sodass jeder auf der Blockchain Prüfen kann, ob der Contract korrekt ausgeführt wurde und die Ausgabe der Funktion korrekt ist. Diese Eigenschaft nennt man auch Determinismus, bei gleicher Eingabe muss die gleiche Ausgabe heraus kommen. Lightning hat Demonstriert dass Transaktionen auch im Second Layer übertragen werden können. Jetzt stellt sich die frage, ist es mit dem Lightning Konzept möglich Smart Contracts zwischen Zwei oder eventuell auch mehreren Teilnehmern auszuführen ohne dass der Contract auf einer Blockchain Initalisiert werden muss? 
+
+=== Beschreibung ===
+

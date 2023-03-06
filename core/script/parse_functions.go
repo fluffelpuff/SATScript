@@ -69,20 +69,20 @@ func parseDatatypeBasedFunctionCall(cursor *SliceBodyCursor, defines *ParsedScri
 	}
 
 	// Die Einzelnen Objekt und Datentyp einträge werden abgerufen
-	retrived_values, las_was_comma, next_is_comma, hight := []string{}, false, false, 0
+	retrived_values, las_w_point, nex_i_point, hight := []string{}, false, false, 0
 	for !cursor.IsEnd() {
 		// Es wird geprüft ob es sich um ein Punkt handelt
-		if next_is_comma {
-
+		if nex_i_point {
+			// Es wird geprüft ob es sich um ein Symbol handelt
 		}
 
 		// Es wird geprüft ob es sich um einen Text handelt
 		if *cursor.GetCurrentItem().Type == PR_TEXT {
 			// Es wird geprüft ob als letztes ein Punkt angegeben wurde
-			if !las_was_comma {
+			if !las_w_point {
 				// Es wird geprüft ob es sich um das erste Item handelt
 				if hight != 0 {
-
+					return nil, fmt.Errorf("parseDatatypeBasedFunctionCall: invalid ")
 				}
 			}
 
@@ -90,10 +90,10 @@ func parseDatatypeBasedFunctionCall(cursor *SliceBodyCursor, defines *ParsedScri
 			retrived_values = append(retrived_values, string(*cursor.GetCurrentItem().TextValue))
 
 			// Es wird Signalisiert dass als letztes kein Punkt auf dem Stack lag
-			las_was_comma = false
+			las_w_point = false
 
 			// Es wird Signalisiert
-			next_is_comma = true
+			nex_i_point = true
 		} else {
 			if len(retrived_values) > 0 {
 
