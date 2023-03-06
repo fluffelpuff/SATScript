@@ -82,6 +82,8 @@ func parseDatatypeBasedFunctionCall(cursor *SliceBodyCursor, defines *ParsedScri
 			if *cursor.GetCurrentItem().SymbolValue != PeriodSymbol {
 
 			}
+
+			// Der Eintrag wird aus dem Stack extrahiert
 		}
 
 		// Es wird geprüft ob es sich um einen Text handelt
