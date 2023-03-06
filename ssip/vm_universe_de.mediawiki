@@ -32,12 +32,12 @@ Die Ausführung eines Smart Contracts ist mit der Ausführung eines normalen Pro
 
 Innerhalb eines Containers können Teilnehmer die folgenden Rollen (Rechte) haben:
 
-**Master Node:**
+<b>Master Node:</b>
 * Verwaltet einen privaten Schlüssel für die Container MuSig Wallet.
 * Verwaltet die Container-Account-Wallet (enthält die Beträge einzelner Account-Adressen).
 * Verwaltet den Data Storage, der die Variablen eines Contracts speichert.
 
-**Slave / Client Node:**
+<b>Slave / Client Node:</b>
 * Kann alle aktuellen Zustände eines Containers oder Contracts auslesen.
 * Kann containerbasierte Account-Transaktionen durchführen.
 * Ein Slave verfügt nicht über das Recht, selbst Änderungen in der Container-Account-Wallet oder im Data Storage durchzuführen (nur lesen).
