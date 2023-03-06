@@ -74,6 +74,14 @@ func parseDatatypeBasedFunctionCall(cursor *SliceBodyCursor, defines *ParsedScri
 		// Es wird geprüft ob es sich um ein Punkt handelt
 		if nex_i_point {
 			// Es wird geprüft ob es sich um ein Symbol handelt
+			if *cursor.GetCurrentItem().Type != PR_SYMBOL {
+
+			}
+
+			// Es wird geprüft ob es sich um einen Punkt handelt
+			if *cursor.GetCurrentItem().SymbolValue != PeriodSymbol {
+
+			}
 		}
 
 		// Es wird geprüft ob es sich um einen Text handelt
