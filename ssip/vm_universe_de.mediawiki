@@ -30,19 +30,23 @@ Die Ausführung eines Smart Contracts ist mit der Ausführung eines normalen Pro
 
 === Rollen ===
 
-Innerhalb eines Containers können teilnehmer die folgenden Rollen haben:
+Innerhalb eines Containers können Teilnehmer die folgenden Rollen (Rechte) haben:
 
-* Master:
-* * Verwaltet einen Privaten der Schlüssel für die Container MuSig Wallet.
-* * Verwaltet die Container Account Wallet (enthält die Beträge einzelner Account Adressen).
-* * Verwaltet den Data Storage, dieser speichert die Variablen eines Contracts ab.
-* Slave:
-* * Kann alle Aktuellen zustände eines Containers oder Contracts auslesen.
-* * Kann Containerbaiserte Account Transaktionen durchführen.
-* * Ein Slave verfügt nicht über das Recht selber Änderungen in der Container Account Wallet oder im Data Storage durchzuführen (Nur Lesen).
+**Master Node:**
+* Verwaltet einen privaten Schlüssel für die Container MuSig Wallet.
+* Verwaltet die Container-Account-Wallet (enthält die Beträge einzelner Account-Adressen).
+* Verwaltet den Data Storage, der die Variablen eines Contracts speichert.
 
-Weitere Informationen zu den Unterschieden Zwischen Slave und Master Nodes werden im Dokument genauer erläutert.
+**Slave / Client Node:**
+* Kann alle aktuellen Zustände eines Containers oder Contracts auslesen.
+* Kann containerbasierte Account-Transaktionen durchführen.
+* Ein Slave verfügt nicht über das Recht, selbst Änderungen in der Container-Account-Wallet oder im Data Storage durchzuführen (nur lesen).
+* Weitere Informationen zu den Unterschieden zwischen Slave- und Master-Nodes werden im Dokument genauer erläutert.
 
 === Beschreibung ===
 
-Die Aufgabe eines SATScript Containers besteht darin, die Mainlayer MuSig Wallet zu verwalten, die Kontostände der Adressen innerhalb des Containers zu verwalten sowie die Verwaltung des Data Storages, welcher die Contract-Daten abspeichert. Diese Daten bilden den gesamten Zustand eines Containers ab und müssen immer bei allen Container-Master-Nodes synchron sein. Innerhalb eines Containers ist es möglich, Transaktionen zwischen zwei Adressen durchzuführen, ähnlich wie in Lightning oder auf der Mainchain. Dabei müssen weder der Absender noch der Empfänger ein Master innerhalb des Containers sein. Sofern ein Container nichts anderes eingestellt hat, ist jeder in der Lage, Satoshis in einen Container einzuzahlen (PegIn), auszuzahlen (PegOut) und innerhalb des Containers Transaktionen durchzuführen.
+Die Aufgabe eines SATScript-Containers besteht darin, die Mainlayer-MuSig-Wallet zu verwalten, die Kontostände der Adressen innerhalb des Containers zu führen und den Data Storage zu verwalten, der die Contract-Daten speichert. Diese Daten bilden den gesamten Zustand eines Containers ab und müssen von allen Container-Master-Nodes synchronisiert werden. Innerhalb eines Containers ist es möglich, ähnlich wie auf Lightning oder der Mainchain, Transaktionen zwischen zwei Adressen durchzuführen. Dabei müssen weder der Absender noch der Empfänger eine Master-Rolle innerhalb des Containers einnehmen. Sofern ein Container nichts anderes konfiguriert hat, kann jeder Satoshis in einen Container einzahlen (PegIn), auszahlen (PegOut) und innerhalb des Containers Transaktionen durchführen.
+
+
+Beispiel:
+Alice möchte 1.000.000 Satoshis in einen Container mit Bob einzahlen (PegIn). Dazu erstellt sie eine container-spezifische Bitcoin-Einzahlungsadresse, die auf ihre container-spezifische Account-Adresse verweist, und überweist die 1 Million Satoshis auf die erstellte Bitcoin-Adresse. Sobald der Container die Einzahlung erkannt hat, also nach mindestens 6 Bestätigungen, wird der eingezahlte Betrag der Account-Adresse gutgeschrieben und Alice kann die Satoshis nun innerhalb des Containers verwenden.
