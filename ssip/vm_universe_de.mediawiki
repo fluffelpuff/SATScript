@@ -78,11 +78,11 @@ Alice möchte 100.000 Satoshis auf ihre Bitcoin-Adresse auszahlen lassen. Dazu m
 
 Sobald der Node von Alice die Auszahlungstransaktion erfolgreich geprüft hat, signiert er die Auszahlungsanfrage und übermittelt sie an den Node von Bob. Der Node von Bob prüft die Auszahlungsanfrage erneut und sendet eine signierte Bestätigung zurück, wenn sie korrekt ist. Nachdem der Node von Bob die Auszahlungsanfrage bestätigt hat, wird die Auszahlungstransaktion erstellt und von allen Container-Masternodes signiert und im Bitcoin-Netzwerk veröffentlicht.
 
-=== P2P Netzwerk LockGuard ===
+== P2P Netzwerk LockGuard ==
 
 Damit Paralell nicht 2 änderungen gleichzeitig ausgeführt werden, muss jeder Node welcher eine änderung in einem Container durchführen möchten einen LockGuard im gesamten Netzwerk öffnen.
 
 
-=== Container: Wallet ===
+== Container: Wallet ==
 
 Die Container Wallet verwaltet die eingezahlten Bitcoins/Satoshis eines Containers. Es handelt sich um eine MuSig Wallet, die von allen Master Node Mitgliedern des Containers verwaltet wird. Es ist zu beachten, dass alle Master Node Mitglieder einstimmig über Änderungen in der Container Wallet abstimmen müssen.
