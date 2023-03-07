@@ -72,4 +72,7 @@ Alice möchte 100.000 Satoshis auf ihre Bitcoin-Adresse auszahlen lassen. Dazu m
 * Es muss ausreichend Geld im Container vorhanden sein, um die Auszahlung durchführen zu können.
 * Nach Abzug der Bitcoin-Netzwerkgebühr für die PegOut-Transaktion muss der auszuzahlende Betrag größer als 0 SAT sein.
 
-Sobald der Node von Alice die Auszahlungstransaktion erfolgreich geprüft hat, signiert er die Auszahlungsanfrage und übermittelt sie an den Node von Bob. Der Node von Bob prüft die Auszahlungsanfrage erneut und sendet eine signierte Bestätigung zurück, wenn sie korrekt ist.
+Sobald der Node von Alice die Auszahlungstransaktion erfolgreich geprüft hat, signiert er die Auszahlungsanfrage und übermittelt sie an den Node von Bob. Der Node von Bob prüft die Auszahlungsanfrage erneut und sendet eine signierte Bestätigung zurück, wenn sie korrekt ist. Nachdem der Node von Bob die Auszahlungsanfrage bestätigt hat, wird die Auszahlungstransaktion erstellt und von allen Container-Masternodes signiert und im Bitcoin-Netzwerk veröffentlicht.
+
+=== Container: Wallet ===
+
