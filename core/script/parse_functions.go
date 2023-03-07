@@ -75,12 +75,12 @@ func parseDatatypeBasedFunctionCall(cursor *SliceBodyCursor, defines *ParsedScri
 		if nex_i_point {
 			// Es wird geprüft ob es sich um ein Symbol handelt
 			if *cursor.GetCurrentItem().Type != PR_SYMBOL {
-
+				return nil, nil
 			}
 
 			// Es wird geprüft ob es sich um einen Punkt handelt
 			if *cursor.GetCurrentItem().SymbolValue != PeriodSymbol {
-
+				return nil, nil
 			}
 
 			// Der Eintrag wird aus dem Stack extrahiert
