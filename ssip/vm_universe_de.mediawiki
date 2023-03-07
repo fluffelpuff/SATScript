@@ -32,13 +32,13 @@ Die Ausführung eines Smart Contracts ist mit der Ausführung eines normalen Pro
 
 Innerhalb eines Containers können Teilnehmer die folgenden Rollen (Rechte) haben:
 
-<b>Master Node:</b>
+==== Master Node: ====
 
 * Verwaltet einen privaten Schlüssel für die Container MuSig Wallet.
 * Verwaltet die Container-Account-Wallet (enthält die Beträge einzelner Account-Adressen).
 * Verwaltet den Data Storage, der die Variablen eines Contracts speichert.
 
-<b>Slave / Client Node:</b>
+==== Slave / Client Node: ====
 
 * Kann alle aktuellen Zustände eines Containers oder Contracts auslesen.
 * Kann containerbasierte Account-Transaktionen durchführen.
@@ -51,6 +51,19 @@ Die Aufgabe eines SATScript-Containers besteht darin, die Mainlayer-MuSig-Wallet
 
 ==== Beispiel - PegIn: ====
 
-Alice möchte 1 Millionen Satoshis in einen gemeinsamen Container mit Bob einzahlen (PegIn). Dazu erstellt sie auf ihrem Node eine <b>container-spezifische Bitcoin-Einzahlungsadresse</b>, die auf <b>ihre container-spezifische Account-Adresse</b> verweist und überweist die 1 Million Satoshis an die erstellte Bitcoin-Adresse. Sobald der Node von Alice die Einzahlung erkannt hat, also nach mindestens 6 Bestätigungen, wird der eingezahlte Betrag der Account-Adresse im jeweiligen Container gutgeschrieben. Hierfür sendet der Node von Alice an den Node von Bob eine <b>PegIn Confirmation Message</b> und wartet auf die Bestätigung durch Bob's Node. Nachdem die <b>PegIn Confirmation Message</b> von Bob bestätigt wurde, kann Alice den Eingezahlten Betrag verwenden.
+Alice möchte 1 Millionen Satoshis in einen gemeinsamen Container mit Bob einzahlen (PegIn). Dazu erstellt sie auf ihrem Node eine <b>container-spezifische Bitcoin-Einzahlungsadresse</b>, die auf ihre <b> container-spezifische Account-Adresse</b> verweist und überweist die 1 Million Satoshis an die erstellte Bitcoin-Adresse. Sobald der Node von Alice die Einzahlung erkannt hat, also nach mindestens 6 Bestätigungen, wird der eingezahlte Betrag der Account-Adresse im jeweiligen Container gutgeschrieben. Hierfür sendet der Node von Alice an den Node von Bob eine <b>PegIn Confirmation Message</b> und wartet auf die Bestätigung durch Bob's Node. Nachdem die <b>PegIn Confirmation Message</b> von Bob bestätigt wurde, kann Alice den Eingezahlten Betrag verwenden.
 
 ==== Beispiel - Account Transaktion: ====
+
+Alice möchte ihrem Bekannten Charlie 10K Satoshis senden. Hierfür benötigt Alice die <b>container-spezifische Account-Adresse</b> von Charlie. Die Adresse ist alles, was benötigt wird. Es ist nicht notwendig, dass der Empfänger online ist. Damit sich Charlie eine <b>container-spezifische Account-Adresse</b> erstellen kann, gibt es mehrere Möglichkeiten:
+
+* Alice kann Charlie das Contract- und Container-Image übermitteln. Dadurch muss Charlie nur das Contract/Container-Image installieren und ist automatisch als Client-Node Teil des Containers. 
+* Charlie nutzt die RPC-Schnittstelle von Alice ihrem Node und verbindet eine SATScript Wallet mit diesem. Dabei muss er jedoch beachten, dass er den Daten von Alice vertrauen muss, da er keine Möglichkeit hat, die Container-Daten zu überprüfen.
+
+==== Beispiel - Bezahlbare Funktions-Transaktion: ====
+
+Alice möchte innerhalb eines Containers mit einem Vertrag interagieren. Dazu muss der Vertrag eine Funktion besitzen, die bezahlt werden kann (payable). Um die Funktion aufzurufen, erstellt Alice eine Transaktion, bei der die Adresse des Vertrags als Empfänger angegeben wird und die aufzurufende Funktion spezifiziert wird. Nachdem Alice die Transaktion erstellt und signiert hat, übermittelt sie diese an ihren Node. Der Node überprüft nun, ob die Transaktion korrekt ist. Dazu wird überprüft, ob Alice über ausreichend Guthaben verfügt, ob der Vertrag vorhanden ist, ob die aufgerufene Funktion Teil des Vertrags ist und ob die Funktionsparameter korrekt sind. Nachdem der Node von Alice die Transaktion erfolgreich geprüft hat, übermittelt er sie mit seiner Node-Signatur und dem neuen Storage-Hash an Bob. Der Node von Bob überprüft die Transaktion erneut und vergleicht den Storage-Hash. Wenn die Transaktion gültig ist, signalisiert der Node von Bob dem Node von Alice, dass die Transaktion gültig ist und die Änderungen durchgeführt wurden. Der Betrag welcher an die Funktion gesendet wurde wird von dem Contract verabeitet, in diesem Fall ist die Verabeitung des Betrag Contract abhänig, dem Contract steht es frei wie Beträge verarbeitet werden. Beträge können durch den Contract gelockt oder andersweitig weiterverabeitet werden.
+
+==== Beispiel - PegOut: ====
+
+Alice möchte 100K Satoshis auf ihre Bitcoin-Adresse auszahlen lassen. Dazu muss sie eine PegOut-Anfrage erstellen, welche die kontenerspezifische Absenderadresse, die Bitcoin-Empfängeradresse, den Betrag sowie eine Signatur der kontenerspezifischen Absenderadresse enthält.
