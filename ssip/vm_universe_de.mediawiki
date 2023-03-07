@@ -20,7 +20,6 @@ es beschreibt, wie Daten geschrieben und gelesen werden und wie eine Absicherung
 Es ist ein Versuch zu beweisen, dass Smart Contracts auch auf Bitcoin umsetzbar sind und dass mit einer hoher Funktionalität.
 Smart Contracts, die im Hauptlayer ausgeführt/ausgewertet werden, haben aus meiner Sicht nachfolgende Nachteile:
 * Durch massenhafte On-Chain Ausführung/Auswertung von Smart Contracts wird der Mempool belastet. Dies führt wiederum zu höheren Gebühren und längeren Wartezeiten bei Transaktionen.
-* Die Zensurresistenz einer Blockchain wird verringert, insbesondere die des Vertrags. Die Adresse eines Vertrags kann unter bestimmten Umständen auf eine schwarze Liste gesetzt werden. Dies hätte zur Folge, dass eine Interaktion mit diesem Vertrag nur schwer oder gar nicht mehr möglich wäre.
 * Alle Vertragsinteraktionen sind für immer in der Blockchain gespeichert. Das schwächt die Anonymität einzelner Vertragsparteien. Auch wenn die Transparenz einer Blockchain im Hauptlayer unumgänglich für ihre Sicherheit ist, kann es für einzelne Nutzer Probleme geben, wenn jeder ihre Vertragsinteraktionen nachvollziehen kann.
 * Es müssen X-mal mehr Daten auf der Blockchain gespeichert werden, was zu einer Zentralisierung führen kann. Auch wenn das Speichern immer günstiger wird, sind Terabytes auf Handys und Co. noch kein Standard. Selbst dann stellt sich die Frage: "Muss alles für immer On-Chain gespeichert werden?"
 * Nachdem ein Vertrag auf der Blockchain initialisiert wurde, kann dieser nicht mehr verändert werden. Auf der einen Seite ist das eine Kerneigenschaft einer Blockchain und unumgänglich für den Betrieb einer Blockchain. Der Code des Vertrags ist für immer in der Blockchain gespeichert. Auch dann, wenn der Vertrag von niemandem mehr verwendet wird, bleibt er für immer online. Bei Ethereum erhält ein Vertrag oft einen Eigentümer, der in der Lage ist, den "dezentralen" Smart Contract zu stoppen. Dies hat bei einem fehlerhaften Vertrag zwar den Vorteil, dass neue Nutzer geschützt werden können, da eine Interaktion mit dem Vertrag nicht mehr möglich ist. Es stellt jedoch die Dezentralität des Smart Contracts in Frage, wenn zentrale Stellen in der Lage sind, einen "dezentralen" Vertrag aufzuhalten. Deshalb stellt sich die Frage: "Ist es unbedingt notwendig, einen Smart Contract auf einer Blockchain zu speichern?"
@@ -67,4 +66,10 @@ Alice möchte innerhalb eines Containers mit einem Vertrag interagieren. Dazu mu
 
 ==== Beispiel - PegOut: ====
 
-Alice möchte 100K Satoschis auf ihre Bitcoin-Adresse auszahlen lassen. Dazu muss sie eine PegOut-Anfrage erstellen, welche die <b>container-spezifische Account-Absenderadresse</b>, die Bitcoin-Empfängeradresse, den Betrag sowie eine Signatur der kontenerspezifischen Absenderadresse enthält.
+Alice möchte 100.000 Satoshis auf ihre Bitcoin-Adresse auszahlen lassen. Dazu muss sie eine "Peg-Out"-Anfrage erstellen, die die <b>container-spezifische Account-Absenderadresse</b>, die Bitcoin-Empfängeradresse, den Betrag und eine Signatur der <b>container-spezifischen Account-Absenderadresse</b> enthält. Nachdem Alice die Peg-Out-Anfrage erstellt und signiert hat, übermittelt sie diese an ihren Node. Der Node überprüft, ob die Auszahlungsanfrage korrekt ist. Hierfür müssen folgende Bedingungen erfüllt sein:
+
+* Die <b>container-spezifische Account-Absenderadresse</b> muss über den auszuzahlenden Betrag verfügen.
+* Es muss ausreichend Geld im Container vorhanden sein, um die Auszahlung durchführen zu können.
+* Nach Abzug der Bitcoin-Netzwerkgebühr für die PegOut-Transaktion muss der auszuzahlende Betrag größer als 0 SAT sein.
+
+Sobald der Node von Alice die Auszahlungstransaktion erfolgreich geprüft hat, signiert er die Auszahlungsanfrage und übermittelt sie an den Node von Bob. Der Node von Bob prüft die Auszahlungsanfrage erneut und sendet eine signierte Bestätigung zurück, wenn sie korrekt ist.
