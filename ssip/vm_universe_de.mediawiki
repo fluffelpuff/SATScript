@@ -51,7 +51,8 @@ Die Aufgabe eines SATScript-Containers besteht darin, die Mainlayer-MuSig-Wallet
 
 ==== Beispiel - PegIn: ====
 
-Alice möchte 1 Millionen Satoschis in einen gemeinsamen Container mit Bob einzahlen (PegIn). Dazu erstellt sie auf ihrem Node eine <b>container-spezifische Bitcoin-Einzahlungsadresse</b>, die auf ihre <b> container-spezifische Account-Adresse</b> verweist. Nachdem die Adresse erstellt wurde, überweist Alice die 1 Million Satoschis an die erstellte Bitcoin-Adresse. Sobald der Node von Alice die Einzahlung erkannt hat, also nach mindestens 6 Bestätigungen, wird der eingezahlte Betrag der Account-Adresse im jeweiligen Container gutgeschrieben. Hierfür sendet der Node von Alice an den Node von Bob eine <b>PegIn Confirmation Message</b> und wartet auf die Bestätigung durch Bob's Node. Nachdem die <b>PegIn Confirmation Message</b> von Bob bestätigt wurde, kann Alice den Eingezahlten Betrag verwenden.
+Alice möchte 1 Millionen Satoschis in einen gemeinsamen Container mit Bob einzahlen (PegIn). Dazu erstellt sie auf ihrem Node eine <b>container-spezifische Bitcoin-Einzahlungsadresse</b>, die auf ihre <b> container-spezifische Account-Adresse</b> verweist. Nachdem die Adresse erstellt wurde, überweist Alice die 1 Million Satoschis an die erstellte Bitcoin-Adresse. Sobald der Node von Alice die Einzahlung erkannt hat, also nach mindestens 6 Bestätigungen, wird der eingezahlte Betrag der Account-Adresse im jeweiligen Container gutgeschrieben. Hierfür sendet der Node von Alice eine "PegIn Bestätigungsnachricht" an den Node von Bob und wartet auf dessen Bestätigung. Sobald Bob's Node die "PegIn Bestätigungsnachricht" bestätigt hat, kann Alice die eingezahlten Gelder verwenden.
+
 
 ==== Beispiel - Account Transaktion: ====
 
