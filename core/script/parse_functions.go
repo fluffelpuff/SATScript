@@ -71,19 +71,37 @@ func parseDatatypeBasedFunctionCall(cursor *SliceBodyCursor, defines *ParsedScri
 	// Die Einzelnen Objekt und Datentyp einträge werden abgerufen
 	retrived_values, las_w_point, nex_i_point, hight := []string{}, false, false, 0
 	for !cursor.IsEnd() {
-		// Es wird geprüft ob es sich um ein Punkt handelt
+		// Es wird geprüft ob es sich um einen Punkt handelt
 		if nex_i_point {
 			// Es wird geprüft ob es sich um ein Symbol handelt
 			if *cursor.GetCurrentItem().Type != PR_SYMBOL {
+				cursor.Reset()
 				return nil, nil
 			}
 
 			// Es wird geprüft ob es sich um einen Punkt handelt
 			if *cursor.GetCurrentItem().SymbolValue != PeriodSymbol {
+				cursor.Reset()
 				return nil, nil
 			}
 
 			// Der Eintrag wird aus dem Stack extrahiert
+			cursor.Next()
+
+			// Es wird geprüft ob sich noch ein Eintrag auf dem Stack befindet
+			if cursor.IsEnd() {
+				cursor.Reset()
+				return nil, nil
+			}
+
+			// Es wird Markiert, dass sich bei dem letzten Zeichen um einen Punk handelt
+			las_w_point = true
+
+			// Es wird Markeirt, dass als nächstes kein Punkt erwartet wird
+			nex_i_point = false
+
+			// Die Nächste Runde wird gestartet
+			continue
 		}
 
 		// Es wird geprüft ob es sich um einen Text handelt
