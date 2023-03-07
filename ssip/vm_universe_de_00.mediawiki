@@ -81,6 +81,7 @@ Sobald der Node von Alice die Auszahlungstransaktion erfolgreich geprüft hat, s
 == Netzwerkkommunikation ==
 
 Für die Netzwerkkommunikation der Nodes untereinander verwenden wir Nostr. Nostr erfüllt alle Eigenschaften die benötigt werden um Peers mit einer Hohen Dezentralität kommunizieren zu lassen.
+
 </br><b>Weshalb Nostr?</b>
 
 * Es hat eine sehr hohe Dezentralität.
