@@ -38,7 +38,7 @@ Innerhalb eines Containers können Teilnehmer die folgenden Rollen (Rechte) habe
 * Verwaltet die Container-Account-Wallet (enthält die Beträge einzelner Account-Adressen).
 * Verwaltet den Data Storage, der die Variablen eines Contracts speichert.
 
-==== Slave / Client Node: ====
+=== Slave / Client Node: ===
 
 * Kann alle aktuellen Zustände eines Containers oder Contracts auslesen.
 * Kann containerbasierte Account-Transaktionen durchführen.
