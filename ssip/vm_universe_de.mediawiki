@@ -10,15 +10,16 @@
 
 == Einführung ==
 
-=== Abstrakt ===
+== Abstrakt ==
 
 Dieses Dokument beschreibt, welche Funktionen die Universen und virtuellen Maschinen in SATScript haben,
 es beschreibt, wie Daten geschrieben und gelesen werden und wie eine Absicherung der Daten über mehrere Nodes hinweg erreicht wird.
 
-=== Motivation ===
+== Motivation ==
 
 Es ist ein Versuch zu beweisen, dass Smart Contracts auch auf Bitcoin umsetzbar sind und dass mit einer hoher Funktionalität.
 Smart Contracts, die im Hauptlayer ausgeführt/ausgewertet werden, haben aus meiner Sicht nachfolgende Nachteile:
+
 * Durch massenhafte On-Chain Ausführung/Auswertung von Smart Contracts wird der Mempool belastet. Dies führt wiederum zu höheren Gebühren und längeren Wartezeiten bei Transaktionen.
 * Alle Vertragsinteraktionen sind für immer in der Blockchain gespeichert. Das schwächt die Anonymität einzelner Vertragsparteien. Auch wenn die Transparenz einer Blockchain im Hauptlayer unumgänglich für ihre Sicherheit ist, kann es für einzelne Nutzer Probleme geben, wenn jeder ihre Vertragsinteraktionen nachvollziehen kann.
 * Es müssen X-mal mehr Daten auf der Blockchain gespeichert werden, was zu einer Zentralisierung führen kann. Auch wenn das Speichern immer günstiger wird, sind Terabytes auf Handys und Co. noch kein Standard. Selbst dann stellt sich die Frage: "Muss alles für immer On-Chain gespeichert werden?"
@@ -27,11 +28,11 @@ Smart Contracts, die im Hauptlayer ausgeführt/ausgewertet werden, haben aus mei
 
 Die Ausführung eines Smart Contracts ist mit der Ausführung eines normalen Programms oder einer App vergleichbar, mit dem Unterschied, dass jede Operation durch kryptographische (und andere) Funktionen so zusammengefasst wird, dass jeder auf der Blockchain prüfen kann, ob der Contract korrekt ausgeführt wurde und die Ausgabe der Funktion korrekt ist. Diese Eigenschaft nennt man auch Determinismus, bei gleicher Eingabe muss die gleiche Ausgabe herauskommen. Lightning hat demonstriert, dass Transaktionen auch im Second Layer übertragen werden können. Nun stellt sich die Frage, ob es mit dem Lightning-Konzept möglich ist, Smart Contracts zwischen zwei oder eventuell auch mehreren Teilnehmern auszuführen, ohne dass der Contract auf einer Blockchain initialisiert werden muss.
 
-=== Rollen ===
+== Rollen ==
 
 Innerhalb eines Containers können Teilnehmer die folgenden Rollen (Rechte) haben:
 
-==== Master Node: ====
+=== Master Node: ===
 
 * Verwaltet einen privaten Schlüssel für die Container MuSig Wallet.
 * Verwaltet die Container-Account-Wallet (enthält die Beträge einzelner Account-Adressen).
@@ -44,27 +45,30 @@ Innerhalb eines Containers können Teilnehmer die folgenden Rollen (Rechte) habe
 * Ein Slave verfügt nicht über das Recht, selbst Änderungen in der Container-Account-Wallet oder im Data Storage durchzuführen (nur lesen).
 * Weitere Informationen zu den Unterschieden zwischen Slave- und Master-Nodes werden im Dokument genauer erläutert.
 
-=== Beschreibung ===
+== Beschreibung ==
 
 Die Aufgabe eines SATScript-Containers besteht darin, die Mainlayer-MuSig-Wallet zu verwalten, die Kontostände der Adressen innerhalb des Containers zu führen und den Data Storage zu verwalten, der die Contract-Daten speichert. Diese Daten bilden den gesamten Zustand eines Containers ab und müssen von allen Container-Master-Nodes synchronisiert werden. Innerhalb eines Containers ist es möglich, ähnlich wie auf Lightning oder der Mainchain, Transaktionen zwischen zwei Adressen durchzuführen. Dabei müssen weder der Absender noch der Empfänger eine Master-Rolle innerhalb des Containers einnehmen. Sofern ein Container nichts anderes konfiguriert hat, kann jeder Satoschis in einen Container einzahlen (PegIn), auszahlen (PegOut) und innerhalb des Containers Transaktionen durchführen.
 
-==== Beispiel - PegIn: ====
+== Beispiele ==
+
+<b>Bitte beachte, dass die Beispiele nur eine oberflächliche Beschreibung der Abläufe darstellen.</b>
+
+=== Beispiel - PegIn: ===
 
 Alice möchte 1 Millionen Satoschis in einen gemeinsamen Container mit Bob einzahlen (PegIn). Dazu erstellt sie auf ihrem Node eine <b>container-spezifische Bitcoin-Einzahlungsadresse</b>, die auf ihre <b> container-spezifische Account-Adresse</b> verweist. Nachdem die Adresse erstellt wurde, überweist Alice die 1 Million Satoschis an die erstellte Bitcoin-Adresse. Sobald der Node von Alice die Einzahlung erkannt hat, also nach mindestens 6 Bestätigungen, wird der eingezahlte Betrag der Account-Adresse im jeweiligen Container gutgeschrieben. Hierfür sendet der Node von Alice eine "PegIn Bestätigungsnachricht" an den Node von Bob und wartet auf dessen Bestätigung. Sobald Bob's Node die "PegIn Bestätigungsnachricht" bestätigt hat, kann Alice die eingezahlten Gelder verwenden.
 
-
-==== Beispiel - Account Transaktion: ====
+=== Beispiel - Account Transaktion: ===
 
 Alice möchte ihrem Bekannten Charlie 10K Satoschis senden. Hierfür benötigt Alice die <b>container-spezifische Account-Adresse</b> von Charlie. Die Adresse ist alles, was benötigt wird. Es ist nicht notwendig, dass der Empfänger online ist. Damit sich Charlie eine <b>container-spezifische Account-Adresse</b> erstellen kann, gibt es mehrere Möglichkeiten:
 
 * Alice kann Charlie das Contract- und Container-Image übermitteln. Dadurch muss Charlie nur das Contract/Container-Image installieren und ist automatisch als Client-Node Teil des Containers. 
 * Charlie nutzt die RPC-Schnittstelle von Alice ihrem Node und verbindet eine SATScript Wallet mit diesem um eine <b>container-spezifische Account-Adresse</b> zu erstellen.
 
-==== Beispiel - Bezahlbare Funktions-Transaktion: ====
+=== Beispiel - Bezahlbare Funktions-Transaktion: ===
 
 Alice möchte innerhalb eines Containers mit einem Vertrag interagieren. Dazu muss der Vertrag eine Funktion besitzen, die bezahlt werden kann (payable). Um die Funktion aufzurufen, erstellt Alice eine Transaktion, bei der die Adresse des Vertrags als Empfänger sowie der Betrag angegeben wird. Des Weiteren wird die aufzurufende Funktion spezifiziert. Nachdem Alice die Transaktion erstellt und signiert hat, übermittelt sie diese an ihren Node. Der Node überprüft nun, ob die Transaktion korrekt ist. Dazu wird überprüft, ob Alice über ausreichend Guthaben verfügt, ob der Vertrag vorhanden ist, ob die aufgerufene Funktion Teil des Vertrags ist und ob die Funktionsparameter korrekt sind. Nachdem der Node von Alice die Transaktion erfolgreich geprüft hat, übermittelt er sie mit seiner Node-Signatur und dem neuen Storage-Hash an Bob. Der Node von Bob überprüft die Transaktion erneut und vergleicht den Storage-Hash. Wenn die Transaktion gültig ist, signalisiert der Node von Bob dem Node von Alice, dass die Transaktion gültig ist und die Änderungen durchgeführt wurden. Der Betrag, der an die Funktion gesendet wurde, wird vom Contract verarbeitet. In diesem Fall ist die Verarbeitung des Betrags Contract-abhängig. Dem Contract steht es frei, wie Beträge verarbeitet werden. Beträge können durch den Contract gelockt oder anderweitig weiterverarbeitet werden.
 
-==== Beispiel - PegOut: ====
+=== Beispiel - PegOut: ===
 
 Alice möchte 100.000 Satoshis auf ihre Bitcoin-Adresse auszahlen lassen. Dazu muss sie eine "Peg-Out"-Anfrage erstellen, die die <b>container-spezifische Account-Absenderadresse</b>, die Bitcoin-Empfängeradresse, den Betrag und eine Signatur der <b>container-spezifischen Account-Absenderadresse</b> enthält. Nachdem Alice die Peg-Out-Anfrage erstellt und signiert hat, übermittelt sie diese an ihren Node. Der Node überprüft, ob die Auszahlungsanfrage korrekt ist. Hierfür müssen folgende Bedingungen erfüllt sein:
 
@@ -74,5 +78,11 @@ Alice möchte 100.000 Satoshis auf ihre Bitcoin-Adresse auszahlen lassen. Dazu m
 
 Sobald der Node von Alice die Auszahlungstransaktion erfolgreich geprüft hat, signiert er die Auszahlungsanfrage und übermittelt sie an den Node von Bob. Der Node von Bob prüft die Auszahlungsanfrage erneut und sendet eine signierte Bestätigung zurück, wenn sie korrekt ist. Nachdem der Node von Bob die Auszahlungsanfrage bestätigt hat, wird die Auszahlungstransaktion erstellt und von allen Container-Masternodes signiert und im Bitcoin-Netzwerk veröffentlicht.
 
+=== P2P Netzwerk LockGuard ===
+
+Damit Paralell nicht 2 änderungen gleichzeitig ausgeführt werden, muss jeder Node welcher eine änderung in einem Container durchführen möchten einen LockGuard im gesamten Netzwerk öffnen.
+
+
 === Container: Wallet ===
 
+Die Container Wallet verwaltet die eingezahlten Bitcoins/Satoshis eines Containers. Es handelt sich um eine MuSig Wallet, die von allen Master Node Mitgliedern des Containers verwaltet wird. Es ist zu beachten, dass alle Master Node Mitglieder einstimmig über Änderungen in der Container Wallet abstimmen müssen.
