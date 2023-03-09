@@ -20,7 +20,7 @@ Wofür könnte diese Lösung verwendet werden?
 
 ## Eine Eigene Programmiersprache (SATScript):
 
-Damit es eine perfekt auf Bitcoin angepasste Lösung gibt, habe ich mich entschieden, eine eigene Programmiersprache namens SATScript zu entwickeln. Theoretisch habe ich mich dabei an Ethereum orientiert, jedoch erinnert die virtuelle Maschine für diese Sprache in der Praxis eher an die JVM. (Noch befindet sich dich VM in Arbeit, Status: Lexer)
+Damit es eine perfekt auf Bitcoin angepasste Lösung gibt, habe ich mich entschieden, eine eigene Programmiersprache namens SATScript zu entwickeln. Theoretisch habe ich mich dabei an Ethereum orientiert, jedoch erinnert die virtuelle Maschine für diese Sprache in der Praxis eher an die JVM. (Noch befindet sich die Sprache in Arbeit, Status: Lexer)
 
 ### Beispiel:
 
