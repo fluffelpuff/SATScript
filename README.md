@@ -22,6 +22,18 @@ Wofür könnte diese Lösung verwendet werden?
 
 Damit es eine perfekt auf Bitcoin angepasste Lösung gibt, habe ich mich entschieden, eine eigene Programmiersprache namens SATScript zu entwickeln. Theoretisch habe ich mich dabei an Ethereum orientiert, jedoch erinnert die virtuelle Maschine für diese Sprache in der Praxis eher an die JVM. (Noch befindet sich dich VM in Arbeit, Status: Lexer)
 
+### Beispiel:
+
+```
+pragma satscript ^0.0.1
+
+export func test() (Bool) {
+	return true
+}
+```
+
+Dieser Code stellt eine Funktion mit dem Namen Test bereit, welche ein True oder False zurückgibt.
+
 
 # Hinweis
 
