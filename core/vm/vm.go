@@ -40,6 +40,6 @@ func (obj *NodeScriptVMManager) GetAllContracts() ([]*contract.Contract, error) 
 }
 
 // Es wird versucht einen neuen Skript Manager zu erstellen
-func NewScriptVMManager(conf *config.CoreConfigs, database *db.NodeDatabase) (NodeScriptVMManager, error) {
+func NewScriptVMManager(conf *config.PathConfigs, database *db.NodeDatabase) (NodeScriptVMManager, error) {
 	return NodeScriptVMManager{database: database}, nil
 }

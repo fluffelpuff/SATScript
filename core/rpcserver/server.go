@@ -14,6 +14,6 @@ func (obj *RPCServer) Close() error {
 }
 
 // Erstellt einen RPC Server
-func CreateNewRPCServer(conf *config.CoreConfigs, database *db.NodeDatabase) (RPCServer, error) {
+func CreateNewRPCServer(conf *config.PathConfigs, database *db.NodeDatabase) (RPCServer, error) {
 	return RPCServer{}, nil
 }

@@ -69,7 +69,7 @@ func (obj *NodeDatabase) Close() error {
 }
 
 // Lädt eine Datenbank
-func LoadDatabase(config *config.CoreConfigs, create_new bool) (NodeDatabase, error) {
+func LoadDatabase(config *config.PathConfigs, create_new bool) (NodeDatabase, error) {
 	// Der Dateipfad für die Masterdatei wird abgerufen
 	master_file_path, err := config.GetDatabaseViewFilePath()
 	if err != nil {

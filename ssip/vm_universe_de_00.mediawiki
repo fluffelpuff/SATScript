@@ -87,8 +87,7 @@ Für die Netzwerkkommunikation der Nodes untereinander verwenden wir Nostr. Nost
 * Es hat eine sehr hohe Dezentralität.
 * Es muss keine Zusätzliche Infrastruktur aufgebaut werden, es kann das vorhandene Nostr Netzwerk verwendet werden.
 
-=== Nostr: Ping Pong ===
-
+=== Nostr: Kanäle ===
 
 == Container: Wallet ==
 

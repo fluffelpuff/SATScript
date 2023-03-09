@@ -10,7 +10,7 @@ import (
 	"time"
 )
 
-func serverNode(conf *config.CoreConfigs, database *db.NodeDatabase, climan *cliserver.CLIServer, rpcsrv *rpcserver.RPCServer, vmman *vm.NodeScriptVMManager) error {
+func serverNode(conf *config.PathConfigs, database *db.NodeDatabase, climan *cliserver.CLIServer, rpcsrv *rpcserver.RPCServer, vmman *vm.NodeScriptVMManager) error {
 	// Schließt alle Prozesse in korrekter reihenfolge
 	defer rpcsrv.Close()
 	defer climan.Close()

@@ -1,8 +1,6 @@
 package main
 
 import (
-	"fmt"
-	"runtime"
 	"satscript/core/cliserver"
 	"satscript/core/config"
 	"satscript/core/db"
@@ -11,19 +9,16 @@ import (
 	"satscript/core/vm"
 )
 
-func determine_paths() (config.CoreConfigs, error) {
-	// Es wird geprüft ob es sich um ein Linux oder BSD basiertes System handelt
-	if runtime.GOOS == "linux" {
-		//return config.CoreConfigs{GeneralSettingsPath: "/tmp/ssvm", NoneRootSocketPath: "/etc/satscript.conf", WalletPath: "/home/fluffel/wallets", DatabasePath: "/var/lib/SATScript"}, nil
-		return config.CoreConfigs{GeneralSettingsPath: "/etc/satscript.conf", NoneRootSocketPath: "/tmp/ssvmclinr", RootSocketPath: "/tmp/ssvmclroot", WalletPath: "/home/fluffel/wallets", DatabasePath: "/home/fluffelbuff/ssvm/SATScript"}, nil
-	} else {
-		return config.CoreConfigs{}, fmt.Errorf("Unsupported host os")
-	}
-}
-
 func main() {
 	// Es wird versucht die Passenden Pfade für SATScriptd zu ermitteln
-	paths, err := determine_paths()
+	paths, err := config.DeterminePath()
+	if err != nil {
+		log.NODE_EPRINTLN(err)
+		return
+	}
+
+	// Die Configurationsdatei wird versucht ejnzulesen
+	_, err = config.LoadOrCreateConfigFile(&paths)
 	if err != nil {
 		log.NODE_EPRINTLN(err)
 		return

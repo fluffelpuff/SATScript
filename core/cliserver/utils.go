@@ -8,6 +8,6 @@ func setPrimToRoot(path string) error {
 }
 
 // Gibt an ob der Aktuelle Benutzer als Root unterwegs ist
-func currentIsPrivUser(conf *config.CoreConfigs) bool {
+func currentIsPrivUser(conf *config.PathConfigs) bool {
 	return false
 }

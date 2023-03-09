@@ -24,3 +24,8 @@ func (obj *ParsedScriptDefines) GetFunctionReturnTypes(fName string) []*Prepared
 func (obj *ParsedScriptDefines) GetFunctionParameter(fName string) []*ParsedFunctionArgument {
 	return []*ParsedFunctionArgument{}
 }
+
+// Gib an ob der Datentyp einer Variable die Funktion besitzt
+func (obj *ParsedScriptDefines) GetVariableDataTypeFunctionValueCall(varName string, subList []string, func_call *ParsedScriptItem) bool {
+	return true
+}

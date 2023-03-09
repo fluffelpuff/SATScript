@@ -1,8 +1,10 @@
 package config
 
-import "runtime"
+import (
+	"runtime"
+)
 
-type CoreConfigs struct {
+type PathConfigs struct {
 	GeneralSettingsPath string
 	NoneRootSocketPath  string
 	RootSocketPath      string
@@ -10,9 +12,12 @@ type CoreConfigs struct {
 	DatabasePath        string
 }
 
-func (obj *CoreConfigs) GetDatabaseViewFilePath() (string, error) {
-	if runtime.GOOS == "linux" {
+func (obj *PathConfigs) GetDatabaseViewFilePath() (string, error) {
+	if runtime.GOOS == "linux" || runtime.GOOS == "darwin" {
 		return obj.DatabasePath + "/master.db", nil
 	}
 	return "", nil
+}
+
+type ConfigFile struct {
 }

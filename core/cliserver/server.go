@@ -154,7 +154,7 @@ func (obj *CLIServer) Close() error {
 }
 
 // Erzeugt einen neuen CLI Server
-func NewCLIServer(config *config.CoreConfigs, db *db.NodeDatabase, vmobj *vm.NodeScriptVMManager) (CLIServer, error) {
+func NewCLIServer(config *config.PathConfigs, db *db.NodeDatabase, vmobj *vm.NodeScriptVMManager) (CLIServer, error) {
 	// Der Normale RPC Server wird erstellt, keine Administratorrechte
 	non_root_socket, err := newCLIServer(config.NoneRootSocketPath, false, db, vmobj)
 	if err != nil {
