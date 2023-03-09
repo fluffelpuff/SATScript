@@ -117,8 +117,41 @@ Gibt an ob es sich um eine Variablen Dekleration handelt, wenn ja wird disee zur
 wenn nein wird ein nil wert zurückgegeben.
 */
 func parseVariableDeclaration(prep_script *PreparedUnparsedScript) (*PreparedText, error) {
-	r := PreparedText("")
-	return &r, nil
+	// Es wird geprüft ob das Stack am ende ist
+	if prep_script.StackIsEnd() {
+		return nil, nil
+	}
+
+	// Der Aktuelle Cursor wird abgerufen
+	cursor := prep_script.GetCurrentCursor()
+
+	// Es wird grpüft ob es sich um einen Text handelt
+	if cursor.GetCurrentItem().Type != &PR_TEXT {
+		return nil, nil
+	}
+
+	// Aus dem Aktuellen Cursor wird ein SliceCursor erstellt
+	c_cursor := cursor.ToSliceCursor()
+
+	// Speichert die Variablen und Funktionen ab welche verfügbar sind
+	var_and_funcs := new(ParsedScriptDefines)
+
+	// Es wird geprüft ob es sich um eine Variablen Dekleration handelt
+	var_dec, err := parseVarDeclaration(c_cursor, var_and_funcs)
+	if err != nil {
+		return nil, fmt.Errorf("parseVariableDeclaration: " + err.Error())
+	}
+	if var_dec == nil {
+		return nil, nil
+	}
+
+	// Der Cursor Slice wird angepasst
+	if !transportStateToCursorAndFinallyPushBackHight(c_cursor, &cursor) {
+		return nil, fmt.Errorf("parseVariableDeclaration: Unkown internal error")
+	}
+
+	// Es wird ein neues Kommentarobjekt erzeugt
+	return nil, nil
 }
 
 /*
@@ -128,8 +161,8 @@ func ParsePreparatedScript(prep_script *PreparedUnparsedScript) error {
 	// Die Höhe des Skriptes wird auf das Ende
 	prep_script.SetToSVHightEnd()
 
-	// Speichert das Aktuelle Skript ab
-	current_script := new(ParsedScript)
+	// Es wird ein neues Skript Objekt erzeugt, dieses Entählt alle Funktionen welche für diese Verion verfügabr sind
+	current_script := NewParsedScript(prep_script.LanguageSpeficationVersion)
 
 	// Die Schleife wird solange ausgeführt, bis alle Einträge auf dem Stack abgearbeitet wurden
 	for !prep_script.StackIsEnd() {
@@ -143,6 +176,16 @@ func ParsePreparatedScript(prep_script *PreparedUnparsedScript) error {
 			continue
 		}
 
+		// Es wird geprüft ob es sich um eine Variablen Definierung handelt
+		is_variable_declaration, err := parseVariableDeclaration(prep_script)
+		if err != nil {
+			return fmt.Errorf("ParsePreparatedScript: " + err.Error())
+		}
+		if is_variable_declaration != nil {
+			// Es wird geprüft ob der Name bereits Deklariert wurde
+			continue
+		}
+
 		// Es wird geprüft ob als nächstes eine Funktion Deklariert wurde
 		fnc_result, err := parseFunctionDeklaration(prep_script)
 		if err != nil {
@@ -150,19 +193,14 @@ func ParsePreparatedScript(prep_script *PreparedUnparsedScript) error {
 		}
 		if fnc_result != nil {
 			// Es wird geprüft ob die Funktion bereits Deklariert ist
-			if current_script.NameAlwaysDeclarated(fnc_result.Name) {
+			if current_script.IsDeclarated(fnc_result.Name) {
 				return fmt.Errorf("ParsePreparatedScript: 1")
 			}
 
-			// Der Name wird deklariert
-			current_script.DeclaratedFunctions = append(current_script.DeclaratedFunctions, &fnc_result.Name)
-
-			// Es wird ein neues Item erzeugt
-			cs_item := new(ParsedScriptItem)
-			cs_item.ItemType = &PS_ITEM_FUNCTION_DECLARATION
-
-			// Das Item wird zwischengespeichert
-			current_script.Items = append(current_script.Items, cs_item)
+			// Die Neue Funktion wird Registriert
+			if !current_script.RegisterNewFunction(fnc_result) {
+				return fmt.Errorf("ParsePreparatedScript: 2")
+			}
 
 			// Die Operation wird erzeugt
 			continue

@@ -344,7 +344,7 @@ func parseCodeBlockTypeCubeByCursor(cursor *PreparedUnparsedScriptCursor, return
 		return nil, fmt.Errorf("parseCodeBlockTypeCubeByCursor: invalid function declaration 3")
 	}
 
-	// Diese Schleife wird solange ausgeführt bis der Cideblock geschlossen wurde
+	// Diese Schleife wird solange ausgeführt bis der Codeblock geschlossen wurde
 	total_openers, total_closers, body_items := 1, 0, []*PreparedToken{}
 	for !cursor.IsEnd() {
 		// Das Aktuelle Element wird vom Stack geholt

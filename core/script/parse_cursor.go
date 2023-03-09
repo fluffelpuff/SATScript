@@ -32,6 +32,14 @@ func (obj *PreparedUnparsedScriptCursor) FinallyPushBackHight() {
 	obj.PreparedUnparsedScriptObject.currentHight = obj.CurrentHight
 }
 
+// Diese Funktion erstellt einen SliceCursor aus einem PreparedUnparsedScriptCursor
+func (obj *PreparedUnparsedScriptCursor) ToSliceCursor() *SliceBodyCursor {
+	slic := new(SliceBodyCursor)
+	slic.CurrentHight = obj.CurrentHight
+	slic.Items = obj.PreparedUnparsedScriptObject.PreparatedTokens[obj.CurrentHight:]
+	return slic
+}
+
 type SliceBodyCursor struct {
 	Items        []*PreparedToken
 	AbolutHight  uint
@@ -78,4 +86,19 @@ func (pbj *SliceBodyCursor) RestItems() int {
 // Gibt den Aktuellen Slice aus
 func (obj *SliceBodyCursor) GetSlice() []*PreparedToken {
 	return obj.Items[obj.CurrentHight:]
+}
+
+// Überträgt die Änderungen eines Slices an den einen Cursor
+func transportStateToCursor(m *SliceBodyCursor, s *PreparedUnparsedScriptCursor) bool {
+	s.CurrentHight = m.CurrentHight
+	return true
+}
+
+// Das gleiche wie transportStateToCursor nur dass die Änderungen danach an den Master zurück übergeben werden
+func transportStateToCursorAndFinallyPushBackHight(m *SliceBodyCursor, s *PreparedUnparsedScriptCursor) bool {
+	if !transportStateToCursor(m, s) {
+		return false
+	}
+	s.FinallyPushBackHight()
+	return true
 }

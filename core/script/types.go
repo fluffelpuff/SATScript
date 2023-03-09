@@ -89,6 +89,7 @@ type ParsedScriptItem struct {
 	FunctionCall        *ParsedScriptFunctionCall
 	MapDeclaration      *ParsedScriptMapDeclaration
 	ItemType            *ParsedScriptItemType
+	FunctionDeclaration *ParsedFunction
 	VarDeclarationValue *ParsedScriptItem
 	CommentValue        *PreparedText
 	FloatValue          *big.Float
@@ -100,16 +101,12 @@ type ParsedScriptItem struct {
 
 // Gibt ein Geparstes Objekt an
 type ParsedScript struct {
-	DeclaratedFunctions []*string
 	DeclaratedVariabels []*string
 	Items               []*ParsedScriptItem
 }
 
 // Speichert die Variablen und die Funktionen ab welche verfügbar sind
 type ParsedScriptDefines struct {
-	// Speichert die Funktionen ab welche Deklariert wurden
-	DeclaratedFunctions []*ParsedFunction
-
 	// Speichert die Variablen ab welche Deklariert wurden
 	DeclaratedVariabels []*ParsedScriptVariableDeclaration
 }
